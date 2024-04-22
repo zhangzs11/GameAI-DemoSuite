@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\ofApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Goap">
+      <UniqueIdentifier>{e26f96c8-5e3d-4bf6-9832-2b43fc451be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Goap\Core">
+      <UniqueIdentifier>{1659b240-6684-43c1-8538-69fc7cf72c16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Goap\MyAction">
+      <UniqueIdentifier>{abe1cfac-6c5e-4ce2-a70f-f51f919ac2c6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ofApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KinematicMotion.h" />
+    <ClInclude Include="src\DynamicSteeringBehaviours.h" />
+    <ClInclude Include="src\WanderBehaviours.h" />
+    <ClInclude Include="src\FlockingBehavior.h" />
+    <ClInclude Include="src\Character.h" />
+    <ClInclude Include="src\Graph.h" />
+    <ClInclude Include="src\DecisionTree.h" />
+    <ClInclude Include="src\BehaviorTree.h" />
+    <ClInclude Include="src\Blackboard.h" />
+    <ClInclude Include="src\myBTnodes.h" />
+    <ClInclude Include="src\GoapAction.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapPlanner.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapStatus.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapMemory.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapAgent.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapSensor.h">
+      <Filter>Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapGoToTargetAction.h">
+      <Filter>Goap\MyAction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapGoRandomAction.h">
+      <Filter>Goap\MyAction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapFindMonsterAction.h">
+      <Filter>Goap\MyAction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapShootAction.h">
+      <Filter>Goap\MyAction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GoapDanceAction.h">
+      <Filter>Goap\MyAction</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+</Project>

@@ -7,7 +7,6 @@
 
 #pragma once
 
-// MARK: Review later
 #include "ofConstants.h"
 
 #ifdef OF_SOUND_PLAYER_AV_ENGINE
@@ -58,9 +57,6 @@ public:
     float getPan() const;
     bool isLoaded() const;
     float getVolume() const;
-	
-	float getDuration() const;
-	unsigned int getDurationMS() const;
     
     void * getAVEnginePlayer();
     

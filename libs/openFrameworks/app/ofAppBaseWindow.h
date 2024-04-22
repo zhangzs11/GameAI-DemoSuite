@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofWindowSettings.h"
-// MARK: Target
 #include "ofConstants.h"
 
 class ofBaseApp;

@@ -55,7 +55,4 @@
 - (void)positionMs:(int)value;
 - (int)positionMs;
 
-// total duration in seconds of player's audio
-- (float)duration;
-
 @end

@@ -89,9 +89,6 @@ public:
 
 	bool    isLoaded() const;
 	
-	float getDuration() const;
-	unsigned int getDurationMS() const;
-	
 	// IPHONE EXTRA FUNCTIONS
 	static void	vibrate();
 	

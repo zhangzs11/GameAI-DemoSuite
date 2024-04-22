@@ -1,11 +1,10 @@
 #pragma once
 
 #include "ofGLBaseTypes.h"
-#include "ofShader.h"
-#include "of3dGraphics.h"
-// MARK: Optimization pointers in next four objects
-#include "ofMatrixStack.h"
 #include "ofPolyline.h"
+#include "ofShader.h"
+#include "ofMatrixStack.h"
+#include "of3dGraphics.h"
 #include "ofBitmapFont.h"
 #include "ofPath.h"
 //#include "ofMaterialBaseTypes.h"
@@ -134,29 +133,29 @@ public:
 	void disableAntiAliasing();
     
 	// color options
-	void setColor(float r, float g, float b); // 0-1
-	void setColor(float r, float g, float b, float a); // 0-1
-	void setColor(const ofFloatColor & color);
-	void setColor(const ofFloatColor & color, float _a);
-	void setColor(float gray); // new set a color as grayscale with one argument
+	void setColor(int r, int g, int b); // 0-255
+	void setColor(int r, int g, int b, int a); // 0-255
+	void setColor(const ofColor & color);
+	void setColor(const ofColor & color, int _a);
+	void setColor(int gray); // new set a color as grayscale with one argument
 	void setHexColor( int hexColor ); // hex, like web 0xFF0033;
 
 	void setBitmapTextMode(ofDrawBitmapMode mode);
     
 	// bg color
-	ofFloatColor getBackgroundColor();
-	void setBackgroundColor(const ofFloatColor & c);
-	void background(const ofFloatColor & c);
+	ofColor getBackgroundColor();
+	void setBackgroundColor(const ofColor & c);
+	void background(const ofColor & c);
 	void background(float brightness);
-	void background(int hexColor, int _a=255);
-	void background(float r, float g, float b, float a=1.f);
+	void background(int hexColor, float _a=255.0f);
+	void background(int r, int g, int b, int a=255);
 
 	bool getBackgroundAuto();
 	void setBackgroundAuto(bool bManual);		// default is true
     
 	void clear();
-	void clear(float r, float g, float b, float a=0.f);
-	void clear(float brightness, float a=0.f);
+	void clear(float r, float g, float b, float a=0);
+	void clear(float brightness, float a=0);
 	void clearAlpha();
     
     
@@ -218,7 +217,7 @@ public:
     void enableSeparateSpecularLight(){}
     void disableSeparateSpecularLight(){}
 	void setSmoothLighting(bool b){}
-	void setGlobalAmbientColor(const ofFloatColor& c){}
+	void setGlobalAmbientColor(const ofColor& c){}
     void enableLight(int lightIndex);
     void disableLight(int lightIndex);
 	void setLightSpotlightCutOff(int lightIndex, float spotCutOff){}

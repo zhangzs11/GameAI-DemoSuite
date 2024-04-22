@@ -1,6 +1,5 @@
 #pragma once
 
-// MARK: ofConstants targets
 #include "ofConstants.h"
 
 class ofBuffer;
@@ -150,8 +149,7 @@ public:
 	/// device 0 - COM2
 	/// device 1 - COM4
 	/// ~~~~
-	[[deprecated("Use listDevices()")]]
-	void enumerateDevices();
+	OF_DEPRECATED_MSG("Use listDevices() instead", void enumerateDevices());
 
 	/// \brief Returns a vector of ofSerialDeviceInfo instances with the
 	/// devicePath, deviceName, deviceID set.

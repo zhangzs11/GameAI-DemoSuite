@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ofRectangle.h"
-#include "ofPixels.h" //MARK: unique_ptr
+#include "ofPixels.h"
 #include "ofTexture.h"
 #include "ofGraphics.h"
+#include "ofConstants.h"
 
 
 /*

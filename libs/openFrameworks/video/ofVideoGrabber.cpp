@@ -2,8 +2,8 @@
 #include "ofVideoBaseTypes.h"
 #include "ofGLUtils.h"
 #include "ofAppRunner.h"
-#include "ofPixels.h"
 #include "ofConstants.h"
+#include "ofPixels.h"
 
 #ifdef OF_VIDEO_CAPTURE_IOS
 	#include "ofxiOSVideoGrabber.h"

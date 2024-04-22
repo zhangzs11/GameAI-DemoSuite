@@ -573,12 +573,12 @@ bool ofPath::isFilled() const{
 }
 
 //----------------------------------------------------------
-ofFloatColor ofPath::getFillColor() const{
+ofColor ofPath::getFillColor() const{
 	return fillColor;
 }
 
 //----------------------------------------------------------
-ofFloatColor ofPath::getStrokeColor() const{
+ofColor ofPath::getStrokeColor() const{
 	return strokeColor;
 }
 
@@ -743,7 +743,7 @@ bool ofPath::getUseShapeColor() const {
 }
 
 //----------------------------------------------------------
-void ofPath::setColor( const ofFloatColor& color ) {
+void ofPath::setColor( const ofColor& color ) {
 	setFillColor( color );
 	setStrokeColor( color );
 }
@@ -754,7 +754,7 @@ void ofPath::setHexColor( int hex ) {
 }
 
 //----------------------------------------------------------
-void ofPath::setFillColor(const ofFloatColor & color){
+void ofPath::setFillColor(const ofColor & color){
 	setUseShapeColor(true);
 	fillColor = color;
 }
@@ -765,7 +765,7 @@ void ofPath::setFillHexColor( int hex ) {
 }
 
 //----------------------------------------------------------
-void ofPath::setStrokeColor(const ofFloatColor & color){
+void ofPath::setStrokeColor(const ofColor & color){
 	setUseShapeColor(true);
 	strokeColor = color;
 }

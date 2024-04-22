@@ -755,16 +755,11 @@ bool ofGstVideoGrabber::setup(int w, int h){
 	videoUtils.setCopyPixels(true);
 #endif
 	if(internalPixelFormat!=OF_PIXELS_NATIVE){
-		//string decodebin, scale;
-		string decodebin = "";
-		string scale = "";
-		if (format.mimetype == "image/jpeg") {
-			decodebin = "! jpegdec ";
-		}
-		if (format.mimetype == "video/x-bayer") {
+		string decodebin, scale;
+		if(format.mimetype == "video/x-bayer"){
 			decodebin = "! bayer2rgb ";
 		}else if(gst_video_format_from_string(format.format_name.c_str()) == GST_VIDEO_FORMAT_ENCODED || gst_video_format_from_string(format.format_name.c_str()) ==GST_VIDEO_FORMAT_UNKNOWN){
-			decodebin += "! decodebin ";
+			decodebin = "! decodebin ";
 		}
 
 		if(format.format_name!=ofGstVideoUtils::getGstFormatName(internalPixelFormat)){
@@ -840,7 +835,7 @@ bool ofGstVideoGrabber::isFrameNew() const {
 }
 
 
-ofPixels & ofGstVideoGrabber::getPixels(){
+ofPixels& ofGstVideoGrabber::getPixels(){
 	return videoUtils.getPixels();
 }
 

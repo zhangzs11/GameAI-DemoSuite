@@ -4,7 +4,6 @@
 
 #include "ofGraphicsConstants.h"
 #include "ofBufferObject.h"
-// FIXME: Targets but it can be optional
 #include "ofConstants.h"
 #include <unordered_map>
 

@@ -8,7 +8,6 @@
 
 #include "ofxColorPicker.h"
 #include "ofGraphics.h"
-#include "ofPolyline.h"
 
 
 namespace {

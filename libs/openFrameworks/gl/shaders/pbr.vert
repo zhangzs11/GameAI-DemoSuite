@@ -1,14 +1,10 @@
 static const string shader_pbr_vert = R"(
-
-#if !defined(OF_SHADOW_DEPTH_PASS)
 OUT vec3 v_worldPosition;
 OUT vec3 v_worldNormal;
 OUT vec2 v_texcoord; // pass the texCoord just in case
 #if HAS_COLOR
 OUT vec4 v_color;
 #endif
-#endif
-
 
 %additional_includes%
 
@@ -59,7 +55,6 @@ vec4 getTransformedPosition() {
 #endif
 }
 
-#if !defined(OF_SHADOW_DEPTH_PASS)
 void sendVaryings(in vec4 apos) {
 	v_worldNormal = normalize(mat3(modelMatrix) * normal.xyz);
 //	v_texcoord = (textureMatrix*vec4(texcoord.x*mat_texcoord_scale.x,texcoord.y*mat_texcoord_scale.y,0,1)).xy;
@@ -70,7 +65,6 @@ void sendVaryings(in vec4 apos) {
 		v_color = color;
 	#endif
 }
-#endif
 
 %mainVertex%
 
@@ -82,13 +76,5 @@ void main (void){
 	vec4 npos = getTransformedPosition();
 	sendVaryings(npos);
 	gl_Position = modelViewProjectionMatrix * npos;
-}
-)";
-
-static const string shader_pbr_main_depth_vert = R"(
-void main (void){
-	vec4 npos = getTransformedPosition();
-	vec3 worldPosition = (modelMatrix * vec4(npos.xyz, 1.0)).xyz;
-	sendShadowDepthWorldPosition(worldPosition);
 }
 )";

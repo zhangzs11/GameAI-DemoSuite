@@ -2,10 +2,9 @@
 #pragma once
 
 #include "ofParameter.h"
-
-#define GLM_FORCE_CTOR_INIT
-#include "glm/mat4x4.hpp"
 #include <glm/gtc/quaternion.hpp>
+#include "ofConstants.h"
+#include "glm/mat4x4.hpp"
 #include <array>
 
 class ofBaseRenderer;
@@ -100,15 +99,9 @@ public:
 	/// \returns A normalized 3D vector of the node's local y axis direction.
 	glm::vec3 getUpDir() const;
 	
-	
-	[[deprecated ("Use Deg/Rad versions.")]]
-	float getPitch() const;
-
-	[[deprecated ("Use Deg/Rad versions.")]]
-	float getHeading() const;
-
-	[[deprecated ("Use Deg/Rad versions.")]]
-	float getRoll() const;
+	OF_DEPRECATED_MSG("Use Deg/Rad versions.", float getPitch() const);
+	OF_DEPRECATED_MSG("Use Deg/Rad versions.", float getHeading() const);
+	OF_DEPRECATED_MSG("Use Deg/Rad versions.", float getRoll() const);
 
 	/// \brief Get pitch of node, aka the rotation along local x axis.
 	/// \returns The rotation around the local x axis in degrees, as a float.
@@ -137,9 +130,8 @@ public:
 	/// \brief Get the local orientation of the node as a quaternion.
 	/// \returns A quaternion of local orientation (useful for complex rotations)
 	glm::quat getOrientationQuat() const;
-
-	[[deprecated ("Use Deg/Rad versions.")]]
-	glm::vec3 getOrientationEuler() const;
+	
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", glm::vec3 getOrientationEuler() const);
 
 	/// \brief Get local orientation of node in degrees around x, y, and z axes.
 	/// \returns The local x, y and z axes orientation in degrees, as a 3D vector.
@@ -244,37 +236,6 @@ public:
 	/// \param s Desired local scale for all axes as ref to 3D vector where 1 = 100%.
 	void setScale(const glm::vec3& s);
 	
-	/// \brief Set the local position, rotation and scale of the node.
-	///
-	/// \param p Desired local xyz coordinates as ref to 3D vector.
-	/// \param q Desired local orientation as ref to an glm::quat.
-	/// \param s Desired local scale for all axes as ref to 3D vector where 1 = 100%.
-	void setPositionOrientationScale( const glm::vec3& p, const glm::quat& q, const glm::vec3& s );
-	
-	/// \brief Set the local position, rotation and scale of the node.
-	///
-	/// \param p Desired local xyz coordinates as ref to 3D vector.
-	/// \param q Desired local orientation as ref to an glm::quat.
-	/// \param s Desired local scale for all axes as float where 1 = 100%.
-	void setPositionOrientationScale(const glm::vec3& p, const glm::quat& q, const float& s );
-	
-	/// \brief Set the local position, rotation and scale of the node.
-	///
-	/// \param p Desired local xyz coordinates as ref to 3D vector.
-	/// \param eulerAnglesDeg Desired local xyz angles in degrees, as ref to 3D vector.
-	/// \param s Desired local scale for all axes as ref to 3D vector where 1 = 100%.
-	/// \note Using euler angles can cause gimbal lock.
-	void setPositionOrientationScale( const glm::vec3& p, const glm::vec3& eulerAnglesDeg, const glm::vec3& s );
-	
-	/// \brief Set the local position, rotation and scale of the node.
-	///
-	/// \param p Desired local xyz coordinates as ref to 3D vector.
-	/// \param eulerAnglesDeg Desired local xyz angles in degrees, as ref to 3D vector.
-	/// \param s Desired local scale for all axes as ref to 3D vector where 1 = 100%.
-	/// \note Using euler angles can cause gimbal lock.
-	void setPositionOrientationScale( const glm::vec3& p, const glm::vec3& eulerAnglesDeg, const float& s );
-	
-	
 	/// \}
 	/// \name Modifiers
 	/// \{
@@ -305,8 +266,7 @@ public:
 	/// \param amount Desired relative position change along local z axis as float.
 	void dolly(float amount);
 
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void tilt(float degrees);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void tilt(float degrees));
 
 	/// \brief Tilt up+down relative to current orientation (around local x axis).
 	///
@@ -318,8 +278,7 @@ public:
 	/// \param radians Desired relative rotation change along local x axis in radians as float.
 	void tiltRad(float radians);
 	
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void pan(float degrees);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void pan(float degrees));
 
 	/// \brief Rotate left+right relative to current orientation (around local y axis).
 	///
@@ -331,8 +290,7 @@ public:
 	/// \param radians Desired relative rotation change along local y axis in radians as float.
 	void panRad(float radians);
 
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void roll(float degrees);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void roll(float degrees));
 
 	/// \brief Roll left+right relative to current orientation (around local z axis).
 	///
@@ -349,8 +307,7 @@ public:
 	/// \param q Desired relative rotation change as a ref to quaternion.
 	void rotate(const glm::quat& q);
 	
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void rotate(float degrees, const glm::vec3& v);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void rotate(float degrees, const glm::vec3& v));
 
 	/// \brief Rotate relative to current orientation around arbitrary axis.
 	///
@@ -364,8 +321,7 @@ public:
 	/// \param v Desired axis to rotate around as a ref to cartesian 3D Vector.
 	void rotateRad(float radians, const glm::vec3& v);
 
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void rotate(float degrees, float vx, float vy, float vz);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void rotate(float degrees, float vx, float vy, float vz));
 
 	/// \brief Rotate relative to current orientation around arbitrary axis.
 	///
@@ -389,8 +345,7 @@ public:
 	/// \param point Point to rotate around in local xyz coordinates as ref to 3D vector.	
 	void rotateAround(const glm::quat& q, const glm::vec3& point);
 
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void rotateAround(float degrees, const glm::vec3& axis, const glm::vec3& point);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void rotateAround(float degrees, const glm::vec3& axis, const glm::vec3& point));
 	
 	/// \brief Rotate relative to current orientation around arbitrary axis around point.
 	///
@@ -430,11 +385,8 @@ public:
 	/// \param upVector The desired up axis as a ref to cartesian 3D vector.
 	void lookAt(const ofNode& lookAtNode, const glm::vec3& upVector);
 	
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void orbit(float longitude, float latitude, float radius, const glm::vec3& centerPoint = glm::vec3(0, 0, 0));
-	
-	[[deprecated ("Use Deg/Rad versions.")]]
-	void orbit(float longitude, float latitude, float radius, ofNode& centerNode);
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void orbit(float longitude, float latitude, float radius, const glm::vec3& centerPoint = glm::vec3(0, 0, 0)));
+	OF_DEPRECATED_MSG("Use the Deg/Rad version.", void orbit(float longitude, float latitude, float radius, ofNode& centerNode));
 
 	/// \brief Orbit node around a global position at a specific radius.
 	///

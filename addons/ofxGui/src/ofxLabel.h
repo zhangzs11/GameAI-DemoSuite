@@ -2,8 +2,6 @@
 
 #include "ofxBaseGui.h"
 #include "ofParameter.h"
-#include "ofPath.h"
-#include "ofVboMesh.h"
 
 class ofxLabel: public ofxBaseGui {
 public:

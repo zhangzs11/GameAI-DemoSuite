@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofGraphicsBaseTypes.h"
-// MARK: Targets, some can be moved to cpp
 #include "ofConstants.h"
 #include "glm/mat4x4.hpp"
 
@@ -100,8 +99,7 @@ void ofDisableNormalizedTexCoords();
 ///
 /// \param wrapS wrap parameter for texture coordinate s.
 /// \param wrapT wrap parameter for texture coordinate t.
-[[deprecated("Use member method ofTexture::setTextureWrap()")]]
-void ofSetTextureWrap(GLfloat wrapS = GL_CLAMP_TO_EDGE, GLfloat wrapT = GL_CLAMP_TO_EDGE);
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureWrap() instead.",void ofSetTextureWrap(GLfloat wrapS = GL_CLAMP_TO_EDGE, GLfloat wrapT = GL_CLAMP_TO_EDGE));
 
 /// \brief Check whether OF is using custom global texture wrapping.
 ///
@@ -109,8 +107,7 @@ void ofSetTextureWrap(GLfloat wrapS = GL_CLAMP_TO_EDGE, GLfloat wrapT = GL_CLAMP
 ///
 /// \sa ofSetTextureWrap()
 /// \returns true if OF is currently using custom global texture wrapping. 
-[[deprecated("Use member method ofTexture::setTextureWrap()")]]
-bool ofGetUsingCustomTextureWrap();
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureWrap() instead.",bool ofGetUsingCustomTextureWrap());
 
 /// \brief Removes global custom texture wrapping.
 ///
@@ -119,8 +116,7 @@ bool ofGetUsingCustomTextureWrap();
 /// \warning Deprecated. Use member methods instead.
 ///
 /// \sa ofSetTextureWrap()
-[[deprecated("Use member method ofTexture::setTextureWrap()")]]
-void ofRestoreTextureWrap();
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureWrap() instead.",void ofRestoreTextureWrap());
 
 /// \brief Set custom global texture minification/magnification scaling filters.
 ///
@@ -132,21 +128,18 @@ void ofRestoreTextureWrap();
 /// \sa ofTexture::setTextureMinMagFilter()
 /// \param minFilter minifying filter for scaling a pixel to a smaller area.
 /// \param magFilter magnifying filter for scaling a pixel to a larger area.
-[[deprecated("Use member method ofTexture::setTextureMinMagFilter()")]]
-void ofSetMinMagFilters(GLfloat minFilter = GL_LINEAR, GLfloat magFilter = GL_LINEAR);
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureMinMagFilter() instead.",void ofSetMinMagFilters(GLfloat minFilter = GL_LINEAR, GLfloat magFilter = GL_LINEAR));
 
 /// \brief Check whether OF is using custom global texture scaling filters.
 /// \returns true if OF is currently using custom texture scaling filters.
 /// \warning Deprecated. Use member methods instead.
-[[deprecated("Use member method ofTexture::setTextureMinMagFilter()")]]
-bool ofGetUsingCustomMinMagFilters();
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureMinMagFilter() instead.",bool ofGetUsingCustomMinMagFilters());
 
 /// \brief Removes global custom texture wrapping.
 ///
 /// Restores individual ofTexture min mag filter settings.
 /// \warning Deprecated. Use member methods instead.
-[[deprecated("Use member method ofTexture::setTextureMinMagFilter()")]]
-void ofRestoreMinMagFilters();
+OF_DEPRECATED_MSG("Use member method ofTexture::setTextureMinMagFilter() instead.",void ofRestoreMinMagFilters());
 
 /// \brief Texture compression types.
 ///
@@ -430,8 +423,7 @@ class ofTexture : public ofBaseDraws {
 	/// Legacy function for backwards compatibility.
 	///
 	/// \returns true if the texture has been allocated.
-	[[deprecated("Use isAllocated")]]
-	bool bAllocated() const;
+	OF_DEPRECATED_MSG("Use isAllocated instead",bool bAllocated() const);
 
 	/// \brief Destroy an ofTexture instance.
 	///

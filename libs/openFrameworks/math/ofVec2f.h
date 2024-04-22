@@ -2,8 +2,7 @@
 
 #include "ofMath.h"
 #include "ofMathConstants.h"
-
-#define GLM_FORCE_CTOR_INIT
+#include "ofConstants.h"
 #include "glm/vec2.hpp"
 #include "glm/fwd.hpp"
 #include <cmath>
@@ -939,38 +938,38 @@ public:
     // this methods are deprecated in 006 please dont use:
 	/// \cond INTERNAL
 
-    [[deprecated("Use member method getScaled()")]]
-	ofVec2f rescaled( const float length ) const;
+    // getScaled
+    OF_DEPRECATED_MSG("Use member method getScaled() instead.", ofVec2f rescaled( const float length ) const);
 	
-    [[deprecated("Use member method scale()")]]
-	ofVec2f& rescale( const float length );
+    // scale
+    OF_DEPRECATED_MSG("Use member method scale() instead.", ofVec2f& rescale( const float length ));
 	
-    [[deprecated("Use member method getRotated()")]]
-	ofVec2f rotated( float angle ) const;
+    // getRotated
+    OF_DEPRECATED_MSG("Use member method getRotated() instead.", ofVec2f rotated( float angle ) const);
 	
-    [[deprecated("Use member method getNormalized()")]]
-	ofVec2f normalized() const;
+    // getNormalized
+    OF_DEPRECATED_MSG("Use member method getNormalized() instead.", ofVec2f normalized() const);
 	
-    [[deprecated("Use member method getLimited()")]]
-	ofVec2f limited(float max) const;
+    // getLimited
+    OF_DEPRECATED_MSG("Use member method getLimited() instead.", ofVec2f limited(float max) const);
 	
-    [[deprecated("Use member method getPerpendicular()")]]
-	ofVec2f perpendiculared() const;
+    // getPerpendicular
+    OF_DEPRECATED_MSG("Use member method getPerpendicular() instead.", ofVec2f perpendiculared() const);
 	
-    [[deprecated("Use member method getInterpolated()")]]
-	ofVec2f interpolated( const ofVec2f& pnt, float p ) const;
+    // getInterpolated
+    OF_DEPRECATED_MSG("Use member method getInterpolated() instead.", ofVec2f interpolated( const ofVec2f& pnt, float p ) const);
     
-    [[deprecated("Use member method getMiddled()")]]
-	ofVec2f middled( const ofVec2f& pnt ) const;
+    // getMiddled
+    OF_DEPRECATED_MSG("Use member method getMiddled() instead.", ofVec2f middled( const ofVec2f& pnt ) const);
     
-    [[deprecated("Use member method getMapped()")]]
-	ofVec2f mapped( const ofVec2f& origin, const ofVec2f& vx, const ofVec2f& vy ) const;
+    // getMapped 
+    OF_DEPRECATED_MSG("Use member method getMapped() instead.", ofVec2f mapped( const ofVec2f& origin, const ofVec2f& vx, const ofVec2f& vy ) const);
     
-    [[deprecated("Use member method squareDistance()")]]
-	float distanceSquared( const ofVec2f& pnt ) const;
+    // squareDistance
+    OF_DEPRECATED_MSG("Use member method squareDistance() instead.", float distanceSquared( const ofVec2f& pnt ) const);
     
-    [[deprecated("Use member method getRotated()")]]
-	ofVec2f rotated( float angle, const ofVec2f& pivot ) const;   
+    // use getRotated
+    OF_DEPRECATED_MSG("Use member method getRotated() instead.", ofVec2f rotated( float angle, const ofVec2f& pivot ) const);    
     
     // return all zero vector
     static ofVec2f zero() { return ofVec2f(0, 0); }

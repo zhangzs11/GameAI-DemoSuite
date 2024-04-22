@@ -9,7 +9,6 @@
 #pragma once
 
 #include "ofxBaseGui.h"
-#include "ofVboMesh.h"
 
 template<typename Type>
 class ofxInputField : public ofxBaseGui{

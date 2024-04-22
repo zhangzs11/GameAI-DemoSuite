@@ -1,6 +1,5 @@
 #pragma once
 
-// MARK: Review later
 #include "ofConstants.h"
 
 #ifdef OF_SOUND_PLAYER_FMOD
@@ -63,9 +62,6 @@ class ofFmodSoundPlayer : public ofBaseSoundPlayer {
 		float getPan() const;
 		float getVolume() const;
 		bool isLoaded() const;
-	
-		float getDuration() const;
-		unsigned int getDurationMS() const;
 
 		static void initializeFmod();
 		static void closeFmod();
@@ -81,7 +77,6 @@ class ofFmodSoundPlayer : public ofBaseSoundPlayer {
 		float internalFreq; // 44100 ?
 		float speed; // -n to n, 1 = normal, -1 backwards
 		unsigned int length; // in samples;
-		unsigned int durationMS; // duration in milliseconds 
 
 		FMOD_RESULT result;
 		FMOD_CHANNEL * channel = NULL;

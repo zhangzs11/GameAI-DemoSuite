@@ -13,7 +13,7 @@
 #include "ofGLProgrammableRenderer.h"
 #include "ofCubeMapShaders.h"
 #include "ofFbo.h"
-#include "ofTexture.h"
+#include "ofConstants.h"
 
 #define GLM_FORCE_CTOR_INIT
 #include "glm/gtx/transform.hpp"
@@ -203,7 +203,7 @@ ofCubeMap::ofCubeMap(const ofCubeMap & mom) {
 		data->settings = mom.data->settings;
 	}
 	_checkSetup(); // grab a new slot in ofCubeMapsData
-	mGLInternalFormat = mom.mGLInternalFormat;
+	texFormat = mom.texFormat;
 }
 
 //----------------------------------------
@@ -211,7 +211,7 @@ ofCubeMap::ofCubeMap(ofCubeMap && mom) {
 	clear();
 	// taking ownership of the data shared_ptr
 	data = mom.data;
-	mGLInternalFormat = mom.mGLInternalFormat;
+	texFormat = mom.texFormat;
 }
 
 //----------------------------------------
@@ -247,7 +247,7 @@ ofCubeMap & ofCubeMap::operator=(const ofCubeMap & mom){
 	}
 	data->index = -1;
 	_checkSetup(); // grab a new slot in ofCubeMapsData
-	mGLInternalFormat = mom.mGLInternalFormat;
+	texFormat = mom.texFormat;
 	
 	return *this;
 }
@@ -256,7 +256,7 @@ ofCubeMap & ofCubeMap::operator=(const ofCubeMap & mom){
 ofCubeMap& ofCubeMap::operator=(ofCubeMap && mom) {
 	clear();
 	data = mom.data;
-	mGLInternalFormat = mom.mGLInternalFormat;
+	texFormat = mom.texFormat;
 	return *this;
 }
 
@@ -311,100 +311,55 @@ bool ofCubeMap::load( ofCubeMapSettings aSettings ) {
 	std::string ext = ofToLower(aSettings.filePath.extension().string());
 	bool hdr = (ext == ".hdr" || ext == ".exr");
 	
-	if( hdr && !doesSupportHdr() ) {
-		ofLogError("ofCubeMap :: load : hdr and exr not supported with this setup.");
+#if defined(TARGET_OPENGLES) && !defined(TARGET_EMSCRIPTEN)
+	if( hdr ) {
+		ofLogError("ofCubeMap :: load : hdr and exr not supported on OPENGL_ES");
 		return false;
 	}
+#endif
 	
 	bool bLoadOk = false;
 	data->settings = aSettings;
 	
 	ofTexture srcTex;
-	bool bSrcTexIdGenerated = false;
-	GLuint srcTexId;
 	
 	bool bArbTexEnabled = ofGetUsingArbTex();
 	ofDisableArbTex();
 	if( hdr ) {
 		ofFloatPixels fpix;
 		if( ofLoadImage(fpix, data->settings.filePath) ) {
-			ofLogVerbose("ofCubeMap::load : loaded ") << ext << " image.";
+			ofLogNotice("ofCubeMap::load : loaded ") << ext << " image.";
 			bLoadOk = true;
-#if defined(TARGET_OPENGLES)
-			// GL_RGB32F, GL_RGBA32F and GL_RGB16F is not supported in Emscripten opengl es, so we need to set to GL_RGBA16F or GL_RGBA32F. But GL_RGBA32F is not supported via opengl es on most mobile devices as of right now.
-			#if defined(GL_RGBA16F)
-			mGLInternalFormat = GL_RGBA16F;
-			#endif
-#elif !defined(TARGET_OPENGLES)
-			#if defined(GL_RGB16F)
-			mGLInternalFormat = GL_RGB16F;
-			#endif
-			if(aSettings.useMaximumPrecision) {
-				#if defined(GL_RGB32F)
-				ofLogVerbose("ofCubeMap :: load : using maximum precision: GL_RGB32F");
-				mGLInternalFormat = GL_RGB32F;
-				#endif
-			}
-#endif
-			
-			if(getNumPixelChannels() > 3 ) {
-				// set alpha to 1.
-				fpix.setImageType( OF_IMAGE_COLOR );
+#if defined(TARGET_EMSCRIPTEN)
+			// GL_RGB32F GL_RGB16F &&  is not supported in Emscripten opengl es, so we need to set to GL_RGBA16F or GL_RGBA32F
+			// ofFloatPixels uses 32F and is supported via Emscripten, so we switch to that in the _load functions.
+			texFormat = GL_RGBA16F;
+			// just in case, we need to make sure that it's 4 channels
+			if( fpix.getNumChannels() != 4 ) {
 				fpix.setImageType( OF_IMAGE_COLOR_ALPHA );
-			} else {
+			}
+#elif !defined(TARGET_OPENGLES)
+			if( fpix.getNumChannels() != 3 ) {
 				fpix.setImageType( OF_IMAGE_COLOR );
 			}
-			
-			if( isMediumPrecision() ) {
-				int fw = fpix.getWidth();
-				int fh = fpix.getHeight();
-				
-				ofLogVerbose("ofCubeMap :: loading the pixel data from hdr image as medium precision: ") << fw << " x " << fh;
-				
-				auto glFormat = getGLFormatFromInternalFormat();
-				auto glType = getGLTypeFromInternalFormat();
-				
-				float* fPixData = fpix.getData();
-				unsigned int numFs = fw * fh * fpix.getNumChannels();
-				for( unsigned int i = 0; i < numFs; i++ ) {
-					// clamp to the maximum value of float16, medium precision
-					if(fPixData[i] > 65504.f) {
-						fPixData[i] = 65504.f;
-					}
-				}
-				
-				
-				bSrcTexIdGenerated = true;
-				glGenTextures(1, &srcTexId );
-				glBindTexture(GL_TEXTURE_2D, srcTexId);
-				
-				glTexImage2D(GL_TEXTURE_2D, 0, mGLInternalFormat, fw, fh, 0, glFormat, glType, fPixData );
-				
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				
-				glBindTexture(GL_TEXTURE_2D, 0);
-				
-			} else {
-				srcTex.loadData(fpix);
-				srcTexId = srcTex.texData.textureID;
-			}
+			texFormat = GL_RGB32F;
+#endif
+			srcTex.loadData(fpix);
 		}
 	} else {
 		ofPixels ipix;
 		if( ofLoadImage(ipix, data->settings.filePath) ) {
 			bLoadOk = true;
-			mGLInternalFormat = GL_RGB;
+			texFormat = GL_RGB;
 			srcTex.loadData(ipix);
-			srcTexId = srcTex.texData.textureID;
 		}
 	}
 	if( !bLoadOk ) {
-		ofLogError("ofCubeMap :: failed to load image from ") << data->settings.filePath;
+		ofLogWarning("ofCubeMap :: failed to load image from ") << data->settings.filePath;
 	} else {
-#if defined(GL_TEXTURE_CUBE_MAP_SEAMLESS)
+		srcTex.setTextureWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		srcTex.setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
+#if !defined(TARGET_OPENGLES) && defined(GL_TEXTURE_CUBE_MAP_SEAMLESS)
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 #endif
 		
@@ -421,22 +376,25 @@ bool ofCubeMap::load( ofCubeMapSettings aSettings ) {
 			data->settings.preFilterRes = ofNextPow2(data->settings.preFilterRes);
 		}
 		
-		_createCubeMap(srcTexId);
+		_createCubeMap(srcTex);
 		if( isHdr() ) {
 			
 			int srcCubeFSize = std::max(256, data->settings.preFilterRes);
-			GLuint cubeFid = _createFloatCubeMap(srcTexId, srcCubeFSize );
+			GLuint cubeFid = _createFloatCubeMap(srcTex, srcCubeFSize );
+			
 			// figure out the number of mip maps //
-			data->maxMipLevels = log2(srcCubeFSize)+1;
+			data->maxMipLevels = log2(data->settings.preFilterRes) + 1;
 			
 			auto encFolder = data->settings.cacheDirectory;
 			if( !encFolder.empty() ) {
 				if( !ofDirectory::doesDirectoryExist( data->settings.cacheDirectory )) {
-					#if !defined(TARGET_EMSCRIPTEN)
+					#if !defined(TARGET_OPENGLES)
 					if(!ofDirectory::createDirectory( data->settings.cacheDirectory )) {
 						ofLogWarning("ofCubeMap :: load : unable to create directory: ") << data->settings.cacheDirectory;
 					}
 					#endif
+				} else {
+					
 				}
 				encFolder = data->settings.cacheDirectory;
 			}
@@ -446,16 +404,9 @@ bool ofCubeMap::load( ofCubeMapSettings aSettings ) {
 			of::filesystem::path cachePrefilterName { baseName };
 			cachePrefilterName += ("_pre_"+ofToString(data->settings.preFilterRes,0)+".exr");
 			
-			#if defined(TARGET_EMSCRIPTEN)
-			if(data->settings.overwriteCache){
-				data->settings.overwriteCache = false;
-				ofLogNotice("ofCubeMap :: data->settings.overwriteCache is not supported on EMSCRIPTEN: ");
-			}
-			#endif
-			
 			bool bHasCachedIrr = false;
 			bool bHasCachedPre = false;
-			if( data->settings.useCache && !data->settings.overwriteCache ){
+			if( data->settings.useCache && !data->settings.overwriteCache ) {
 				bHasCachedIrr = _loadIrradianceMap(encFolder / cacheIrrName);
 				ofLogVerbose("ofCubeMap :: _loadIrradianceMap: ") << bHasCachedIrr;
 				bHasCachedPre = _loadPrefilterMap(encFolder / cachePrefilterName);
@@ -468,23 +419,18 @@ bool ofCubeMap::load( ofCubeMapSettings aSettings ) {
 			bMakeCache = false;
 			#endif
 			
-			if(!bHasCachedIrr){
+			if( !bHasCachedIrr ) {
 				ofLogVerbose("ofCubeMap :: going to create irradiance map");
-				_createIrradianceMap(cubeFid, bMakeCache, encFolder / cacheIrrName);
+				_createIrradianceMap(cubeFid,bMakeCache, encFolder / cacheIrrName);
 			}
 			
-			if(!bHasCachedPre){
+			if( !bHasCachedPre ) {
 				ofLogVerbose("ofCubeMap :: going to create pre filtered cube map");
 				_createPrefilteredCubeMap(cubeFid, srcCubeFSize,bMakeCache,encFolder / cachePrefilterName );
 			}
 			
 			glDeleteTextures(1, &cubeFid );
 		}
-	}
-	
-	if(bSrcTexIdGenerated) {
-		// clean up the texture that was generated for the cube map if opengl es
-		glDeleteTextures(1, &srcTexId);
 	}
 	
 	if( bArbTexEnabled ) {
@@ -583,63 +529,43 @@ bool ofCubeMap::hasPrefilteredMap() {
 }
 
 //--------------------------------------------------------------
-bool ofCubeMap::hasIrradianceMap(){
+bool ofCubeMap::hasIrradianceMap() {
 	if( !data ) return false;
 	return data->bIrradianceAllocated;
 }
 
 //--------------------------------------------------------------
-GLuint ofCubeMap::getTextureId(){
+GLuint ofCubeMap::getTextureId() {
 	if( !data ) return 0;
 	return data->cubeMapId;
 }
 
 //--------------------------------------------------------------
-bool ofCubeMap::doesSupportHdr(){
-#if !defined(GL_FLOAT)
+bool ofCubeMap::isHdr() {
+#if defined(TARGET_OPENGLES) && !defined(TARGET_EMSCRIPTEN)
 	return false;
-#endif
-#if defined(GL_RGB16F) || defined(GL_RGBA16F) || defined(GL_RGB32F) || defined(GL_RGBA32F)
-	return true;
-#endif
-	return false;
-}
-
-//--------------------------------------------------------------
-bool ofCubeMap::isHdr(){
-	auto glType = getGLTypeFromInternalFormat();
-	#if defined(GL_FLOAT)
-	if(glType == GL_FLOAT) {
+#else
+	#ifdef GL_RGBA32F_EXT
+	if( texFormat == GL_RGBA32F_EXT ) {
 		return true;
 	}
 	#endif
-	#if defined(GL_HALF_FLOAT)
-	if(glType == GL_HALF_FLOAT) {
+	#ifdef GL_RGB32F_EXT
+	if( texFormat == GL_RGB32F_EXT ) {
 		return true;
 	}
 	#endif
-	
-	return false;
+	#ifdef GL_RGBA16F
+	if( texFormat == GL_RGBA16F ) {
+		return true;
+	}
+	#endif
+	return (texFormat == GL_RGBA32F || texFormat == GL_RGB32F);
+#endif
 }
 
 //--------------------------------------------------------------
-bool ofCubeMap::isMediumPrecision(){
-#if defined(GL_RGB16F)
-	if(mGLInternalFormat == GL_RGB16F ) {
-		return true;
-	}
-#endif
-	
-#if defined(GL_RGBA16F)
-	if(mGLInternalFormat == GL_RGBA16F ) {
-		return true;
-	}
-#endif
-	return false;
-}
-
-//--------------------------------------------------------------
-void ofCubeMap::setUseBrdfLutTexture(bool ab){
+void ofCubeMap::setUseBrdfLutTexture( bool ab ) {
 	#ifdef TARGET_OPENGLES
 	data->settings.useLutTex = false;
 	ofLogWarning("ofCubeMap::setUseBrdfLutTexture") << " brdf lut texture not supported on GLES.";
@@ -653,39 +579,38 @@ void ofCubeMap::setUseBrdfLutTexture(bool ab){
 }
 
 //--------------------------------------------------------------
-void ofCubeMap::_createCubeMap(GLuint aSrcTexId) {
+void ofCubeMap::_createCubeMap(ofTexture& aSrcTex) {
 	
 	if( !data->bCubeMapAllocated ) {
 		data->bCubeMapAllocated = true;
 		glGenTextures(1, &data->cubeMapId );
 		retain(data->cubeMapId);
 	}
-	
-	auto internalFormat = mGLInternalFormat;
-	auto glFormat = getGLFormatFromInternalFormat();
-	auto glType = getGLTypeFromInternalFormat();
 		
-	internalFormat = ofGetGLInternalFormatFromPixelFormat(OF_PIXELS_RGB);
+	GLuint internalFormat = ofGetGLInternalFormatFromPixelFormat(OF_PIXELS_RGB);
 	#ifdef TARGET_OPENGLES
 	internalFormat = ofGetGLInternalFormatFromPixelFormat(OF_PIXELS_RGBA);
 	#endif
-
-	glType = GL_UNSIGNED_BYTE;
-	glFormat = GL_RGB;
+	
+	GLuint texStorageFormat = GL_UNSIGNED_BYTE;
+	GLuint gFormat = GL_RGB;
 	#ifdef TARGET_OPENGLES
-	glFormat = GL_RGBA;
+	gFormat = GL_RGBA;
 	#endif
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, data->cubeMapId);
 	
 	for (GLint i = 0 ; i < 6 ; i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, data->settings.resolution, data->settings.resolution, 0, glFormat, glType, NULL);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, data->settings.resolution, data->settings.resolution, 0, gFormat, texStorageFormat, NULL);
 	}
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	
 	_configureCubeTextures( data->cubeMapId, true );
-	_equiRectToCubeMap( data->cubeMapId, aSrcTexId, data->settings.resolution, true );
+	
+	
+	_equiRectToCubeMap( data->cubeMapId, aSrcTex, data->settings.resolution, true );
+	
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, data->cubeMapId);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -694,7 +619,7 @@ void ofCubeMap::_createCubeMap(GLuint aSrcTexId) {
 }
 
 //--------------------------------------------------------------
-void ofCubeMap::_configureCubeTextures(GLuint aCubeMapId, bool abLinearMipLinear){
+void ofCubeMap::_configureCubeTextures(GLuint aCubeMapId, bool abLinearMipLinear) {
 	
 	GLenum textureTarget = getTextureTarget();
 	glBindTexture(textureTarget, aCubeMapId );
@@ -704,9 +629,7 @@ void ofCubeMap::_configureCubeTextures(GLuint aCubeMapId, bool abLinearMipLinear
 	} else {
 		glTexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	
 	glTexParameteri(textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef GL_TEXTURE_WRAP_R
@@ -716,35 +639,35 @@ void ofCubeMap::_configureCubeTextures(GLuint aCubeMapId, bool abLinearMipLinear
 }
 
 //--------------------------------------------------------------
-void ofCubeMap::_initEmptyTextures(GLuint aCubeMapId, int aSize){
+void ofCubeMap::_initEmptyTextures(GLuint aCubeMapId, int aSize) {
 	
 	GLenum textureTarget = getTextureTarget();
 	glBindTexture(textureTarget, aCubeMapId );
-	auto glFormat = getGLFormatFromInternalFormat();
-	auto glType = getGLTypeFromInternalFormat();
+	GLuint texStorageFormat = getTexStorageFormat();
+	GLuint gFormat = getGlTypeFromInternalFormat();
 	
 	for (unsigned int i = 0; i < 6; i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, mGLInternalFormat, aSize, aSize, 0, glFormat, glType, nullptr );
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texFormat, aSize, aSize, 0, gFormat, texStorageFormat, nullptr );
 	}
 	
 	glBindTexture(getTextureTarget(), 0);
 }
 
 //--------------------------------------------------------------
-void ofCubeMap::_initEmptyTextures(GLuint aCubeMapId, GLint aInternalFormat, int aSize, int aNumMipMaps ){
+void ofCubeMap::_initEmptyTextures(GLuint aCubeMapId, GLuint aInternalFormat, int aSize, int aNumMipMaps ) {
 	GLenum textureTarget = getTextureTarget();
 	glBindTexture(textureTarget, aCubeMapId );
-	auto glFormat = getGLFormatFromInternalFormat(aInternalFormat);
-	auto glType = getGLTypeFromInternalFormat(aInternalFormat);
+	GLuint texStorageFormat = getTexStorageFormat(aInternalFormat);
+	GLuint gFormat = getGlTypeFromInternalFormat(aInternalFormat);
 	
 	for (int mip = 0; mip < data->maxMipLevels; mip++) {
 		// reisze framebuffer according to mip-level size.
-		unsigned int mipWidth  = static_cast<unsigned int>(aSize * std::pow(0.5, mip));
+		unsigned int mipWidth  = static_cast<unsigned int>(data->settings.preFilterRes * std::pow(0.5, mip));
 		if(mipWidth < 1 ) {
 			mipWidth = 1;
 		}
 		for (unsigned int i = 0; i < 6; i++) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, aInternalFormat, mipWidth, mipWidth, 0, glFormat, glType, nullptr );
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, aInternalFormat, mipWidth, mipWidth, 0, gFormat, texStorageFormat, nullptr );
 		}
 	}
 	
@@ -752,41 +675,33 @@ void ofCubeMap::_initEmptyTextures(GLuint aCubeMapId, GLint aInternalFormat, int
 }
 
 //--------------------------------------------------------------
-GLuint ofCubeMap::_createFloatCubeMap(GLuint aSrcTexId, int aSrcRes){
+GLuint ofCubeMap::_createFloatCubeMap(ofTexture& aSrcTex, int aSrcRes) {
 	GLuint cubeTexF;
 	glGenTextures(1, &cubeTexF );
-	
-	auto glFormat = getGLFormatFromInternalFormat();
-	auto glType = getGLTypeFromInternalFormat();
+			
+	GLuint texStorageFormat = getTexStorageFormat();
+	GLuint gFormat = getGlTypeFromInternalFormat();
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexF );
 	
 	for (GLint i = 0 ; i < 6 ; i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, mGLInternalFormat, aSrcRes, aSrcRes, 0, glFormat, glType, NULL);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texFormat, aSrcRes, aSrcRes, 0, gFormat, texStorageFormat, NULL);
 	}
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	
 	_configureCubeTextures( cubeTexF, true );
-	_equiRectToCubeMap( cubeTexF, aSrcTexId, aSrcRes, false );
+	_equiRectToCubeMap( cubeTexF, aSrcTex, aSrcRes, false );
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexF);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	
-	
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if( status != GL_FRAMEBUFFER_COMPLETE ) {
-		ofLogError("ofCubeMap :: _createFloatCubeMap : fbo ERROR");
-	} else {
-		ofLogVerbose("ofCubeMap :: _createFloatCubeMap : fbo COMPLETE");
-	}
-	
 	return cubeTexF;
 }
 
 //--------------------------------------------------------------
-void ofCubeMap::_equiRectToCubeMap( GLuint& aCubeTexId, GLuint aSrcTexId, int aSrcRes, bool aBConvertToNonFloat ) {
+void ofCubeMap::_equiRectToCubeMap( GLuint& aCubeTexId, ofTexture& aSrcTex, int aSrcRes, bool aBConvertToNonFloat ) {
 	bool bShaderLoaded = _loadEquiRectToCubeMapShader();
 	if( !bShaderLoaded ) {
 		ofLogError("ofCubeMap::_equiRectToCubeMap : error loading shader");
@@ -796,9 +711,9 @@ void ofCubeMap::_equiRectToCubeMap( GLuint& aCubeTexId, GLuint aSrcTexId, int aS
 	_allocateCubeMesh();
 	std::vector<glm::mat4> views = _getViewMatrices( glm::vec3(0,0,0) );
 	
-	GLuint captureFBO;
+	unsigned int captureFBO;
 	glGenFramebuffers(1, &captureFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)captureFBO );
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO );
 	
 	ofSetColor( 255 );
 		
@@ -806,11 +721,11 @@ void ofCubeMap::_equiRectToCubeMap( GLuint& aCubeTexId, GLuint aSrcTexId, int aS
 	ofViewport(0, 0, aSrcRes, aSrcRes, false);
 	
 	shaderEquiRectToCubeMap.begin();
-	shaderEquiRectToCubeMap.setUniformTexture("uEquirectangularTex", GL_TEXTURE_2D, aSrcTexId, 0);
+	shaderEquiRectToCubeMap.setUniformTexture("uEquirectangularTex", aSrcTex, 0 );
 	shaderEquiRectToCubeMap.setUniformMatrix4f("uProjection", projectionMat );
 	shaderEquiRectToCubeMap.setUniform1f("uFlipY", data->settings.flipVertically ? 1.0f : 0.0f );
 	shaderEquiRectToCubeMap.setUniform1f("uConvertToNonFloat", aBConvertToNonFloat ? 1.0f : 0.0f );
-		
+	
 	for (unsigned int i = 0; i < 6; i++) {
 		shaderEquiRectToCubeMap.setUniformMatrix4f("uView", views[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, aCubeTexId, 0);
@@ -819,13 +734,6 @@ void ofCubeMap::_equiRectToCubeMap( GLuint& aCubeTexId, GLuint aSrcTexId, int aS
 	}
 	shaderEquiRectToCubeMap.end();
 	ofPopView();
-	
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if( status != GL_FRAMEBUFFER_COMPLETE ) {
-		ofLogError("ofCubeMap :: _equiRectToCubeMap : fbo ERROR");
-	} else {
-		ofLogVerbose("ofCubeMap :: _equiRectToCubeMap : fbo COMPLETE; resolution: ") << aSrcRes;
-	}
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &captureFBO);
@@ -856,7 +764,7 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 	
 	if( aBMakeCache ) {
 				
-		ofLogVerbose("ofCubeMap :: _createIrradianceMap : making cache");
+		ofLogNotice("ofCubeMap :: _createIrradianceMap : making cache");
 		
 		ofFbo tfbo;
 		//	fbo.clear();
@@ -867,7 +775,7 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 		//	fboSettings.numColorbuffers = 6;
 		fboSettings.useDepth = false;
 //		fboSettings.textureTarget = GL_TEXTURE_2D;
-		fboSettings.internalformat = mGLInternalFormat;
+		fboSettings.internalformat = texFormat;
 		tfbo.allocate(fboSettings);
 				
 		ofSetColor( 255 );
@@ -897,11 +805,11 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 		if(bAllPixelsCreated) {
 			GLenum textureTarget = getTextureTarget();
 			glBindTexture(textureTarget, data->irradianceMapId );
-			auto glFormat = getGLFormatFromInternalFormat();
-			auto glType = getGLTypeFromInternalFormat();
+			GLuint texStorageFormat = getTexStorageFormat();
+			GLuint gFormat = getGlTypeFromInternalFormat();
 			// we need to create a single image //
 			for (unsigned int i = 0; i < 6; i++) {
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, mGLInternalFormat, fpixels[i].getWidth(), fpixels[i].getHeight(), 0, glFormat, glType, fpixels[i].getData() );
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texFormat, fpixels[i].getWidth(), fpixels[i].getHeight(), 0, gFormat, texStorageFormat, fpixels[i].getData() );
 			}
 			glBindTexture(textureTarget, 0 );
 			
@@ -918,7 +826,7 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 			tfbo.allocate( fboSettings );
 			ofSetColor(255);
 			tfbo.begin(); {
-				ofClear(0, 255);
+				ofClear(0);
 				ofTexture ftex;
 				for (unsigned int j = 0; j < 6; j++) {
 					ftex.loadData( fpixels[j] );
@@ -943,7 +851,8 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 		_initEmptyTextures(data->irradianceMapId, data->settings.irradianceRes );
 		_configureCubeTextures(data->irradianceMapId, false);
 		
-		GLuint captureFBO;
+		unsigned int captureFBO;
+
 		glGenFramebuffers(1, &captureFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO );
 
@@ -963,13 +872,6 @@ void ofCubeMap::_createIrradianceMap(GLuint aSrcCubeFid, bool aBMakeCache, const
 		}
 
 		shaderIrradianceMap.end();
-		
-		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		if( status != GL_FRAMEBUFFER_COMPLETE ) {
-			ofLogError("ofCubeMap :: _createIrradianceMap : fbo ERROR");
-		} else {
-			ofLogVerbose("ofCubeMap :: _createIrradianceMap : fbo COMPLETE");
-		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteFramebuffers(1, &captureFBO);
@@ -1001,7 +903,9 @@ bool ofCubeMap::_loadIrradianceMap(const of::filesystem::path & aCachePath) {
 		glGenTextures(1, &data->irradianceMapId );
 		retain(data->irradianceMapId);
 	}
-		
+	
+//	_configureCubeTextures(data->irradianceMapId, false);
+	
 	int texSize = fullPix.getWidth() / 3;
 	
 	ofFloatPixels fpix;
@@ -1012,10 +916,13 @@ bool ofCubeMap::_loadIrradianceMap(const of::filesystem::path & aCachePath) {
 	
 	glBindTexture(textureTarget, data->irradianceMapId );
 	
-	auto loadTexGLInternalFormat = mGLInternalFormat;
+	GLuint loadTexFormat = texFormat;
+#if defined(TARGET_EMSCRIPTEN)
+	loadTexFormat = GL_RGBA32F;
+#endif
 	
-	auto glFormat = getGLFormatFromInternalFormat(loadTexGLInternalFormat);
-	auto glType = getGLTypeFromInternalFormat(loadTexGLInternalFormat);
+	GLuint texStorageFormat = getTexStorageFormat(loadTexFormat);
+	GLuint gFormat = getGlTypeFromInternalFormat(loadTexFormat);
 	
 	for(unsigned int j = 0; j < 6; j++ ) {
 		//cropTo(ofPixels_<PixelType> &toPix, size_t x, size_t y, size_t _width, size_t _height)
@@ -1023,7 +930,7 @@ bool ofCubeMap::_loadIrradianceMap(const of::filesystem::path & aCachePath) {
 		if( fpix.getNumChannels() != numChannels ) {
 			fpix.setNumChannels(numChannels);
 		}
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, loadTexGLInternalFormat, fpix.getWidth(), fpix.getHeight(), 0, glFormat, glType, fpix.getData() );
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, loadTexFormat, fpix.getWidth(), fpix.getHeight(), 0, gFormat, texStorageFormat, fpix.getData() );
 	}
 	glBindTexture(textureTarget, 0 );
 	
@@ -1044,17 +951,17 @@ void ofCubeMap::_createPrefilteredCubeMap(GLuint aSrcCubeFid, int aSrcRes, bool 
 	retain(data->preFilteredMapId);
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, data->preFilteredMapId);
-	
-	auto glFormat = getGLFormatFromInternalFormat();
-	auto glType = getGLTypeFromInternalFormat();
+
+	GLuint texStorageFormat = getTexStorageFormat();
+	GLuint gFormat = getGlTypeFromInternalFormat();
 	
 	// generate all of the textures and mip maps at once ...
-	//glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->maxMipLevels, mGLInternalFormat, data->settings.preFilterRes, data->settings.preFilterRes);
+	//glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->maxMipLevels, texFormat, data->settings.preFilterRes, data->settings.preFilterRes);
 	// create all of the textures with mip maps //
 	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	
-	_initEmptyTextures( data->preFilteredMapId, mGLInternalFormat, data->settings.preFilterRes, data->maxMipLevels );
+	_initEmptyTextures( data->preFilteredMapId, texFormat, data->settings.preFilterRes, data->maxMipLevels );
 	
 	_configureCubeTextures(data->preFilteredMapId, true);
 	
@@ -1076,7 +983,7 @@ void ofCubeMap::_createPrefilteredCubeMap(GLuint aSrcCubeFid, int aSrcRes, bool 
 		fboSettings.height = fboSettings.width;
 		fboSettings.numSamples = 0;
 		fboSettings.useDepth = false;
-		fboSettings.internalformat = mGLInternalFormat;
+		fboSettings.internalformat = texFormat;
 		
 		cacheFbo.allocate(fboSettings);
 		cacheFbo.begin(); {
@@ -1111,7 +1018,7 @@ void ofCubeMap::_createPrefilteredCubeMap(GLuint aSrcCubeFid, int aSrcRes, bool 
 			
 			for (unsigned int i = 0; i < 6; ++i) {
 				tfbo.begin();
-				ofClear(0,255);
+				ofClear(0);
 				shaderPreFilterMap.begin();
 				shaderPreFilterMap.setUniformTexture("environmentMap", getTextureTarget(), aSrcCubeFid, 0 );
 				shaderPreFilterMap.setUniformMatrix4f("uProjection", projectionMat );
@@ -1140,7 +1047,7 @@ void ofCubeMap::_createPrefilteredCubeMap(GLuint aSrcCubeFid, int aSrcRes, bool 
 			for (unsigned int i = 0; i < 6; ++i) {
 				if( fpixels[i].getWidth() > 0 && fpixels[i].getHeight() > 0 ) {
 //					// must use glTexSubImage with glTexStorage2D
-					glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, 0, 0, mipWidth, mipWidth, glFormat, glType,fpixels[i].getData());
+					glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, 0, 0, mipWidth, mipWidth, gFormat, texStorageFormat,fpixels[i].getData());
 
 				}
 			}
@@ -1213,11 +1120,15 @@ bool ofCubeMap::_loadPrefilterMap( const of::filesystem::path & aCachePath ) {
 	retain(data->preFilteredMapId);
 	
 	
-	auto loadTexGLInternalFormat = mGLInternalFormat;
-	auto glFormat = getGLFormatFromInternalFormat(loadTexGLInternalFormat);
-	auto glType = getGLTypeFromInternalFormat(loadTexGLInternalFormat);
+	GLuint loadTexFormat = texFormat;
+#if defined(TARGET_EMSCRIPTEN)
+	loadTexFormat = GL_RGBA32F;
+#endif
 	
-	_initEmptyTextures( data->preFilteredMapId, loadTexGLInternalFormat, data->settings.preFilterRes, data->maxMipLevels );
+	GLuint texStorageFormat = getTexStorageFormat(loadTexFormat);
+	GLuint gFormat = getGlTypeFromInternalFormat(loadTexFormat);
+	
+	_initEmptyTextures( data->preFilteredMapId, loadTexFormat, data->settings.preFilterRes, data->maxMipLevels );
 	
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, data->preFilteredMapId);
 	//glTexStorage2D(GL_TEXTURE_CUBE_MAP, data->maxMipLevels, loadTexFormat, data->settings.preFilterRes, data->settings.preFilterRes);
@@ -1246,7 +1157,7 @@ bool ofCubeMap::_loadPrefilterMap( const of::filesystem::path & aCachePath ) {
 			if( fpix.getNumChannels() != numChannels ) {
 				fpix.setNumChannels(numChannels);
 			}
-			glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, 0, 0, mipWidth, mipWidth, glFormat, glType, fpix.getData());
+			glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, 0, 0, mipWidth, mipWidth, gFormat, texStorageFormat,fpix.getData());
 		}
 		
 		if( mip > 0 ) {
@@ -1347,59 +1258,20 @@ std::vector<glm::mat4> ofCubeMap::_getViewMatrices(const glm::vec3& apos ) {
 }
 
 //--------------------------------------------------------------
-GLenum ofCubeMap::getGLFormatFromInternalFormat() {
-	return getGLFormatFromInternalFormat(mGLInternalFormat);
+GLuint ofCubeMap::getTexStorageFormat() {
+	return getTexStorageFormat(texFormat);
 }
 
 //--------------------------------------------------------------
-GLenum ofCubeMap::getGLFormatFromInternalFormat(GLint aInternalFormat) {
-#if defined(GL_RGBA32F)
-	if( aInternalFormat == GL_RGBA32F ) {
-		return GL_RGBA;
-	}
-#endif
-#if defined(GL_RGBA16F)
-	if( aInternalFormat == GL_RGBA16F ) {
-		return GL_RGBA;
-	}
-#endif
-	
-#ifdef GL_RGBA32F_EXT
-	if( aInternalFormat == GL_RGBA32F_EXT ) {
-		return GL_RGBA;
-	}
-#endif
-	return GL_RGB;
-}
-
-//--------------------------------------------------------------
-GLenum ofCubeMap::getGLTypeFromInternalFormat(){
-	return getGLTypeFromInternalFormat(mGLInternalFormat);
-}
-
-//--------------------------------------------------------------
-GLenum ofCubeMap::getGLTypeFromInternalFormat(GLint aInternalFormat){
-	#if defined(GL_RGB32F)
+GLuint ofCubeMap::getTexStorageFormat(GLuint aInternalFormat) {
+	#if !defined(TARGET_OPENGLES) || defined(TARGET_EMSCRIPTEN)
 	if( aInternalFormat == GL_RGB32F ) {
 		return GL_FLOAT;
-	}
-	#endif
-	#if defined(GL_RGBA32F)
-	if( aInternalFormat == GL_RGBA32F ) {
+	} else if( aInternalFormat == GL_RGBA32F ) {
 		return GL_FLOAT;
+	} else if( aInternalFormat == GL_RGBA16F ) {
+		return GL_HALF_FLOAT;
 	}
-	#endif
-	#if defined(GL_RGBA16F)
-	if( aInternalFormat == GL_RGBA16F ) {
-		return GL_FLOAT;
-	}
-	#endif
-	#if defined(GL_RGB16F)
-	if( aInternalFormat == GL_RGB16F ) {
-		return GL_FLOAT;
-	}
-	#endif
-	
 	#ifdef GL_RGBA32F_EXT
 	if( aInternalFormat == GL_RGBA32F_EXT ) {
 		return GL_FLOAT;
@@ -1410,13 +1282,42 @@ GLenum ofCubeMap::getGLTypeFromInternalFormat(GLint aInternalFormat){
 		return GL_FLOAT;
 	}
 	#endif
-	
+	#endif
 	return GL_UNSIGNED_BYTE;
 }
 
 //--------------------------------------------------------------
-int ofCubeMap::getNumPixelChannels(){
-	GLenum glType = getGLFormatFromInternalFormat();
+GLuint ofCubeMap::getGlTypeFromInternalFormat() {
+	return getGlTypeFromInternalFormat(texFormat);
+}
+
+//--------------------------------------------------------------
+GLuint ofCubeMap::getGlTypeFromInternalFormat(GLuint aInternalFormat) {
+	#if !defined(TARGET_OPENGLES) || defined(TARGET_EMSCRIPTEN)
+		if( aInternalFormat == GL_RGBA32F ) {
+			return GL_RGBA;
+		}
+		if( aInternalFormat == GL_RGBA16F ) {
+			return GL_RGBA;
+		}
+	
+		#ifdef GL_RGBA32F_EXT
+		if( aInternalFormat == GL_RGBA32F_EXT ) {
+			return GL_RGBA;
+		}
+		#endif
+		#ifdef GL_RGB32F_EXT
+		if( aInternalFormat == GL_RGB32F_EXT ) {
+			return GL_RGB;
+		}
+		#endif
+	#endif
+	return GL_RGB;
+}
+
+//--------------------------------------------------------------
+int ofCubeMap::getNumPixelChannels() {
+	GLuint glType = getGlTypeFromInternalFormat();
 	if( glType == GL_RGBA ) {
 		return 4;
 	}
@@ -1445,10 +1346,9 @@ bool ofCubeMap::_loadEquiRectToCubeMapShader() {
 			return true;
 		} else {
 			shaderEquiRectToCubeMap.unload();
-			ofLogError("ofCubeMap::_loadEquiRectToCubeMapShader : unable to create shaderEquiRectToCubeMap shader ");
+			ofLogNotice("ofCubeMap::_loadEquiRectToCubeMapShader : unable to create shaderEquiRectToCubeMap shader ");
 			return false;
 		}
 	}
 	return true;
 }
-

@@ -473,9 +473,9 @@ void ofAppEGLWindow::setup(const ofAppEGLWindowSettings & _settings) {
 	nFramesSinceWindowResized = 0;
 
 	if(settings.glesVersion>1){
-		currentRenderer = std::make_shared<ofGLProgrammableRenderer>(this);
+		currentRenderer = make_shared<ofGLProgrammableRenderer>(this);
 	}else{
-		currentRenderer = std::make_shared<ofGLRenderer>(this);
+		currentRenderer = make_shared<ofGLRenderer>(this);
 	}
 
 	makeCurrent();

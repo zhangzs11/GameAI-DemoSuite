@@ -51,9 +51,9 @@ unsigned long IpEndpointName::GetHostByName( const char *s )
 void IpEndpointName::AddressAsString( char *s ) const
 {
 	if( address == ANY_ADDRESS ){
-		std::snprintf( s, ADDRESS_STRING_LENGTH, "<any>" );
+		std::sprintf( s, "<any>" );
 	}else{
-		std::snprintf( s, ADDRESS_STRING_LENGTH, "%d.%d.%d.%d",
+		std::sprintf( s, "%d.%d.%d.%d",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),
@@ -66,9 +66,9 @@ void IpEndpointName::AddressAndPortAsString( char *s ) const
 {
 	if( port == ANY_PORT ){
 		if( address == ANY_ADDRESS ){
-			std::snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "<any>:<any>" );
+			std::sprintf( s, "<any>:<any>" );
 		}else{
-			std::snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "%d.%d.%d.%d:<any>",
+			std::sprintf( s, "%d.%d.%d.%d:<any>",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),
@@ -76,15 +76,15 @@ void IpEndpointName::AddressAndPortAsString( char *s ) const
 		}
 	}else{
 		if( address == ANY_ADDRESS ){
-			std::snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "<any>:%d", port );
+			std::sprintf( s, "<any>:%d", port );
 		}else{
-			std::snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "%d.%d.%d.%d:%d",
+			std::sprintf( s, "%d.%d.%d.%d:%d",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),
 				(int)(address & 0xFF),
 				(int)port );
 		}
-	}
+	}	
 }
 }

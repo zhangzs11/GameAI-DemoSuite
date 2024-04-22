@@ -386,31 +386,31 @@ void ofRendererCollection::setupScreen(){
 }
 
 // color options
-void ofRendererCollection::setColor(float r, float g, float b){
+void ofRendererCollection::setColor(int r, int g, int b){
    for(auto renderer: renderers){
 	   renderer->setColor(r,g,b);
 	}
 }
 
-void ofRendererCollection::setColor(float r, float g, float b, float a){
+void ofRendererCollection::setColor(int r, int g, int b, int a){
    for(auto renderer: renderers){
 	   renderer->setColor(r,g,b,a);
 	}
 }
 
-void ofRendererCollection::setColor(const ofFloatColor & color){
+void ofRendererCollection::setColor(const ofColor & color){
    for(auto renderer: renderers){
 	   renderer->setColor(color);
 	}
 }
 
-void ofRendererCollection::setColor(const ofFloatColor & color, float _a){
+void ofRendererCollection::setColor(const ofColor & color, int _a){
    for(auto renderer: renderers){
 	   renderer->setColor(color,_a);
 	}
 }
 
-void ofRendererCollection::setColor(float gray){
+void ofRendererCollection::setColor(int gray){
    for(auto renderer: renderers){
 	   renderer->setColor(gray);
 	}
@@ -423,15 +423,15 @@ void ofRendererCollection::ofRendererCollection::setHexColor( int hexColor ){
 } // hex, like web 0xFF0033;
 
 // bg color
-ofFloatColor ofRendererCollection::getBackgroundColor(){
+ofColor ofRendererCollection::getBackgroundColor(){
 	if(renderers.size()){
 		return renderers[0]->getBackgroundColor();
 	}else{
-		return ofFloatColor(200.f/255.f);
+		return ofColor(200);
 	}
 }
 
-void ofRendererCollection::setBackgroundColor(const ofFloatColor & color){
+void ofRendererCollection::setBackgroundColor(const ofColor & color){
    for(auto renderer: renderers){
 	   renderer->setBackgroundColor(color);
 	}
@@ -445,7 +445,7 @@ bool ofRendererCollection::getBackgroundAuto(){
 	}
 }
 
-void ofRendererCollection::background(const ofFloatColor & c){
+void ofRendererCollection::background(const ofColor & c){
    for(auto renderer: renderers){
 	   renderer->background(c);
 	}
@@ -457,13 +457,13 @@ void ofRendererCollection::background(float brightness){
 	}
 }
 
-void ofRendererCollection::background(int hexColor, int _a){
+void ofRendererCollection::background(int hexColor, float _a){
    for(auto renderer: renderers){
 	   renderer->background(hexColor,_a);
 	}
 }
 
-void ofRendererCollection::background(float r, float g, float b, float a){
+void ofRendererCollection::background(int r, int g, int b, int a){
    for(auto renderer: renderers){
 	   renderer->background(r,g,b,a);
 	}

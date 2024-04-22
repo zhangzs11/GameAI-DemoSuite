@@ -1,11 +1,7 @@
 #include "ofTrueTypeFont.h"
-#include "ofGraphics.h"
-#include "ofPixels.h"
-#include "ofPath.h"
+//--------------------------
 
 #include <ft2build.h>
-#include <algorithm>
-#include <numeric>
 
 #ifdef TARGET_LINUX
 #include <fontconfig/fontconfig.h>
@@ -15,6 +11,11 @@
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
 #include FT_TRIGONOMETRY_H
+
+#include <algorithm>
+#include <numeric>
+
+#include "ofGraphics.h"
 
 using std::max;
 using std::vector;
@@ -253,7 +254,6 @@ static string osxFontPathByName(const string& fontname){
 #ifdef TARGET_WIN32
 #include <unordered_map>
 // font font face -> file name name mapping
-// FIXME: second -> fs::path
 static std::unordered_map<string, string> fonts_table;
 // read font linking information from registry, and store in std::map
 //------------------------------------------------------------------
@@ -328,14 +328,14 @@ void initWindows(){
 }
 
 
-static string winFontPathByName(const string & fontname){
+static string winFontPathByName(const string& fontname ){
 	return fonts_table[fontname];
 }
 #endif
 
 #ifdef TARGET_LINUX
 //------------------------------------------------------------------
-static string linuxFontPathByName(const string & fontname){
+static string linuxFontPathByName(const string& fontname){
 	string filename;
 	FcPattern * pattern = FcNameParse((const FcChar8*)fontname.c_str());
 	FcBool ret = FcConfigSubstitute(0,pattern,FcMatchPattern);
@@ -370,15 +370,15 @@ static string linuxFontPathByName(const string & fontname){
 #endif
 
 //-----------------------------------------------------------
-// FIXME: it seems first parameter is string because it represents the font name only
-static bool loadFontFace(const of::filesystem::path & _fontname, FT_Face & face, of::filesystem::path & filename, int index){
-	auto fontname = _fontname;
-	filename = ofToDataPathFS(_fontname, true);
+static bool loadFontFace(const of::filesystem::path& _fontname, FT_Face & face, of::filesystem::path & filename, int index){
+	of::filesystem::path fontname = _fontname;
+	filename = ofToDataPath(_fontname,true);
+	ofFile fontFile(filename,ofFile::Reference);
 	int fontID = index;
-	if(!of::filesystem::exists(filename)){
+	if(!fontFile.exists()){
 #ifdef TARGET_LINUX
-		// FIXME: fs::path in input and output
-		filename = linuxFontPathByName(_fontname.string());
+		// FIXME: update function linuxFontPathByName to use path instead of string
+		filename = linuxFontPathByName(fontname.string());
 #elif defined(TARGET_OSX)
 		if(fontname==OF_TTF_SANS){
 			fontname = "Helvetica Neue";
@@ -392,7 +392,6 @@ static bool loadFontFace(const of::filesystem::path & _fontname, FT_Face & face,
 		}else if(fontname==OF_TTF_MONO){
 			fontname = "Menlo Regular";
 		}
-		// FIXME: fs::path in input and output
 		filename = osxFontPathByName(fontname.string());
 #elif defined(TARGET_WIN32)
 		if(fontname==OF_TTF_SANS){
@@ -402,22 +401,21 @@ static bool loadFontFace(const of::filesystem::path & _fontname, FT_Face & face,
 		}else if(fontname==OF_TTF_MONO){
 			fontname = "Courier New";
 		}
-		// FIXME: fs::path in input and output
-		filename = winFontPathByName(ofPathToString(fontname));
+		filename = winFontPathByName(fontname.string());
 #endif
 		if(filename == "" ){
-			ofLogError("ofTrueTypeFont") << "loadFontFace(): couldn't find font " << fontname;
+			ofLogError("ofTrueTypeFont") << "loadFontFace(): couldn't find font \"" << fontname << "\"";
 			return false;
 		}
-		ofLogVerbose("ofTrueTypeFont") << "loadFontFace(): " << fontname << " not a file in data loading system font from " << filename;
+		ofLogVerbose("ofTrueTypeFont") << "loadFontFace(): \"" << fontname << "\" not a file in data loading system font from \"" << filename << "\"";
 	}
 	FT_Error err;
-	err = FT_New_Face( library, ofPathToString(filename).c_str(), fontID, &face );
+	err = FT_New_Face( library, filename.string().c_str(), fontID, &face );
 	if (err) {
 		// simple error table in lieu of full table (see fterrors.h)
 		string errorString = "unknown freetype";
 		if(err == 1) errorString = "INVALID FILENAME";
-		ofLogError("ofTrueTypeFont") << "loadFontFace(): couldn't create new face for " << fontname << ": FT_Error " << err << " " << errorString;
+		ofLogError("ofTrueTypeFont") << "loadFontFace(): couldn't create new face for \"" << fontname << "\": FT_Error " << err << " " << errorString;
 		return false;
 	}
 

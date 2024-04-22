@@ -144,7 +144,6 @@ void ofxOpenALSoundPlayer::unload() {
 		else
 			SoundEngine_UnloadEffect(myId);
 	}
-	length = 0;
 }
 
 //--------------------------------------------------------------
@@ -367,16 +366,6 @@ float ofxOpenALSoundPlayer::getVolume()  const{
 //--------------------------------------------------------------
 bool ofxOpenALSoundPlayer::isLoaded()  const{
     return bLoadedOk;
-}
-
-//--------------------------------------------------------------
-float ofxOpenALSoundPlayer::getDuration() const {
-	return (float)length / 1000.0f;
-}
-
-//--------------------------------------------------------------
-unsigned int ofxOpenALSoundPlayer::getDurationMS() const {
-	return length;
 }
 
 //--------------------------------------------------------------

@@ -1,6 +1,5 @@
 #pragma once
 
-// MARK: Review later
 #include "ofConstants.h"
 
 #ifdef OF_SOUND_PLAYER_OPENAL
@@ -70,9 +69,6 @@ class ofOpenALSoundPlayer : public ofBaseSoundPlayer, public ofThread {
         float getVolume() const;
 		bool isPaused() const;
 		bool isLoaded() const;
-	
-		float getDuration() const;
-		unsigned int getDurationMS() const;
 
 		static void initialize();
 		static void close();

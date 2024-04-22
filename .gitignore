@@ -84,6 +84,10 @@ Desktop.ini
 .vs/*
 .vs
 
+openframeworksLib _release.lib
+openframeworksLib_debug.lib
+projectGenerator/projectGenerator.exe
+examples/
 
 
 

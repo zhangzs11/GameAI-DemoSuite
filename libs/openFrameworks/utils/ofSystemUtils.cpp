@@ -3,7 +3,6 @@
 #include "ofFileUtils.h"
 #include "ofLog.h"
 #include "ofUtils.h"
-// FIXME: ofConstants Targets
 #include "ofConstants.h"
 
 #include <condition_variable>

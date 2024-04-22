@@ -4,7 +4,6 @@
 
 #if defined(OF_SOUND_PLAYER_FMOD)
 #include "ofSoundPlayer.h"
-#include "ofFmodSoundPlayer.h"
 #endif
 
 #ifdef OF_SOUNDSTREAM_RTAUDIO

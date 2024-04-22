@@ -4,6 +4,7 @@
 #include "ofGLBaseTypes.h"
 #include "ofGraphicsConstants.h"
 #include "ofGLUtils.h"
+#include "ofConstants.h"
 
 template<typename T>
 class ofPixels_;
@@ -146,7 +147,6 @@ bool ofLoadImage(ofShortPixels & pix, const ofBuffer & buffer, const ofImageLoad
 
 /// \todo Needs documentation.
 bool ofLoadImage(ofTexture & tex, const of::filesystem::path& path, const ofImageLoadSettings &settings = ofImageLoadSettings());
-bool ofLoadImage(ofTexture & tex, const of::filesystem::path& path, bool bFlipInY, const ofImageLoadSettings &settings = ofImageLoadSettings());
 bool ofLoadImage(ofTexture & tex, const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
 
 /// \todo Needs documentation.
@@ -211,8 +211,7 @@ public:
     /// allocate or by loading pixel data into the image.
     /// \deprecated Use isAllocated() instead
     /// \returns true if the image has been allocated.
-    [[deprecated("Use isAllocated()")]]
-    bool bAllocated();
+    OF_DEPRECATED_MSG("Use isAllocated()", bool bAllocated());
 
     /// \brief This clears the texture and pixels contained within the ofImage.
 	void clear();
@@ -231,12 +230,9 @@ public:
     /// into the texture.
 	bool load(const ofBuffer & buffer, const ofImageLoadSettings &settings = ofImageLoadSettings());
 
-    [[deprecated("Use load")]]
-	bool loadImage(const std::string& fileName);
-    [[deprecated("Use load")]]
-	bool loadImage(const ofBuffer & buffer);
-    [[deprecated("Use load")]]
-	bool loadImage(const ofFile & file);
+    OF_DEPRECATED_MSG("Use load instead",bool loadImage(const std::string& fileName));
+    OF_DEPRECATED_MSG("Use load instead",bool loadImage(const ofBuffer & buffer));
+    OF_DEPRECATED_MSG("Use load instead",bool loadImage(const ofFile & file));
 
     virtual ~ofImage_();
 
@@ -374,10 +370,8 @@ public:
 	/// \returns A const reference to the texture that the ofImage contains.
     const ofTexture & getTexture() const;
 
-    [[deprecated("Use getTexture")]]
-	ofTexture & getTextureReference();
-    [[deprecated("Use getTexture")]]
-	const ofTexture & getTextureReference() const;
+    OF_DEPRECATED_MSG("Use getTexture",ofTexture & getTextureReference());
+    OF_DEPRECATED_MSG("Use getTexture",const ofTexture & getTextureReference() const);
 
     /// \brief Binds the oftexture instance that the ofImage contains so that
     /// it can be used for advanced drawing.
@@ -419,10 +413,8 @@ public:
     /// Make sure you call either update() after making changes to the ofPixels.
     ///
     /// \returns An ofPixels reference that you can use to manipulate the raw pixel data of the ofImage.
-    [[deprecated("Use getPixels()")]]
-    ofPixels_<PixelType> & getPixelsRef();
-    [[deprecated("Use getPixels()")]]
-    const ofPixels_<PixelType> & getPixelsRef() const;
+    OF_DEPRECATED_MSG("Use getPixels() instead ", ofPixels_<PixelType> & getPixelsRef());
+    OF_DEPRECATED_MSG("Use getPixels() instead ", const ofPixels_<PixelType> & getPixelsRef() const);
 
     operator ofPixels_<PixelType>&();
 
@@ -620,12 +612,9 @@ public:
     /// \param compressionLevel The ofImageQualityType.
 	bool save(ofBuffer & buffer, ofImageFormat imageFormat = OF_IMAGE_FORMAT_PNG, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const;
 
-    [[deprecated("Use save")]]
-	void saveImage(const std::string& fileName, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const;
-    [[deprecated("Use save")]]
-	void saveImage(ofBuffer & buffer, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const;
-    [[deprecated("Use save")]]
-	void saveImage(const ofFile & file, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const;
+    OF_DEPRECATED_MSG("Use save instead",void saveImage(const std::string& fileName, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const);
+    OF_DEPRECATED_MSG("Use save instead",void saveImage(ofBuffer & buffer, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const);
+    OF_DEPRECATED_MSG("Use save instead",void saveImage(const ofFile & file, ofImageQualityType compressionLevel = OF_IMAGE_QUALITY_BEST) const);
 
     /// \}
     /// \name Operators

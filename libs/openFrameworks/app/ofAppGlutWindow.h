@@ -3,15 +3,8 @@
 #include "ofAppBaseWindow.h"
 #include "ofEvents.h"
 #include "ofTypes.h"
-// MARK: Target but optional
+#include "ofPixels.h"
 #include "ofConstants.h"
-
-template <typename T>
-class ofPixels_;
-typedef ofPixels_<unsigned char> ofPixels;
-typedef ofPixels_<float> ofFloatPixels;
-typedef ofPixels_<unsigned short> ofShortPixels;
-typedef ofPixels & ofPixelsRef;
 
 class ofBaseApp;
 class ofBaseRenderer;

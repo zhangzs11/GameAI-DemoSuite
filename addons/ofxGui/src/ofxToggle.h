@@ -2,7 +2,6 @@
 
 #include "ofParameter.h"
 #include "ofxBaseGui.h"
-#include "ofPath.h"
 
 class ofxToggle : public ofxBaseGui{
 public:

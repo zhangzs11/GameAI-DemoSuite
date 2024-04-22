@@ -5,12 +5,12 @@
  *      Author: arturo
  */
 
-#pragma once
+#ifndef OFMATRIXSTACK_H_
+#define OFMATRIXSTACK_H_
 
-// ofRectangle currentViewport only
 #include "ofRectangle.h"
 #include "ofGraphicsConstants.h"
-#define GLM_FORCE_CTOR_INIT
+#include "ofConstants.h"
 #include "glm/mat4x4.hpp"
 #include <stack>
 
@@ -111,3 +111,5 @@ private:
 	inline void updatedRelatedMatrices();
 
 };
+
+#endif /* OFMATRIXSTACK_H_ */

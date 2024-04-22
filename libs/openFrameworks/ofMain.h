@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OF_MAIN_H
+#define OF_MAIN_H
 
 //--------------------------
 // utils
@@ -20,12 +21,13 @@
 
 //--------------------------
 // types
-#include "ofColor.h"
 #include "ofGraphicsBaseTypes.h"
-#include "ofParameter.h"
+#include "ofTypes.h"
+#include "ofColor.h"
 #include "ofPoint.h"
 #include "ofRectangle.h"
-#include "ofTypes.h"
+#include "ofParameter.h"
+#include "ofParameterGroup.h"
 
 //--------------------------
 // math
@@ -34,14 +36,13 @@
 
 //--------------------------
 // communication
-#if !defined(TARGET_OF_IOS) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN)
-    #include "ofSerial.h"
-    #include "ofArduino.h"
+#if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN)
+	#include "ofSerial.h"
+	#include "ofArduino.h"
 #endif
 
 //--------------------------
 // gl
-#include "ofCubeMap.h"
 #include "ofFbo.h"
 #include "ofGLRenderer.h"
 #include "ofGLUtils.h"
@@ -51,16 +52,17 @@
 #include "ofTexture.h"
 #include "ofVbo.h"
 #include "ofVboMesh.h"
+#include "ofCubeMap.h"
 // #include "ofGLProgrammableRenderer.h"
 // #ifndef TARGET_PROGRAMMABLE_GL
-//     #include "ofGLRenderer.h"
+// 	#include "ofGLRenderer.h"
 // #endif
 
 //--------------------------
 // graphics
-#if !defined(TARGET_OF_IOS) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN)
-    #include "ofCairoRenderer.h"
-    #include "ofGraphicsCairo.h"
+#if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN)
+	#include "ofCairoRenderer.h"
+	#include "ofGraphicsCairo.h"
 #endif
 #include "ofGraphics.h"
 #include "ofImage.h"
@@ -73,24 +75,24 @@
 
 //--------------------------
 // app
-#include "ofAppBaseWindow.h"
-#include "ofAppRunner.h"
 #include "ofBaseApp.h"
-#include "ofMainLoop.h"
+#include "ofAppRunner.h"
+#include "ofAppBaseWindow.h"
 #include "ofWindowSettings.h"
-#if !defined(TARGET_OF_IOS) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN) & !defined(TARGET_RASPBERRY_PI_LEGACY)
-    #include "ofAppGLFWWindow.h"
-    #if !defined(TARGET_LINUX_ARM)
-        #include "ofAppGlutWindow.h"
-    #endif
+#include "ofMainLoop.h"
+#if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN) & !defined(TARGET_RASPBERRY_PI_LEGACY)
+	#include "ofAppGLFWWindow.h"
+	#if !defined( TARGET_LINUX_ARM )
+		#include "ofAppGlutWindow.h"
+	#endif
 #endif
 
 //--------------------------
 // audio
 #ifndef TARGET_NO_SOUND
-    #include "ofSoundStream.h"
-    #include "ofSoundPlayer.h"
-    #include "ofSoundBuffer.h"
+	#include "ofSoundStream.h"
+	#include "ofSoundPlayer.h"
+	#include "ofSoundBuffer.h"
 #endif
 
 //--------------------------
@@ -111,26 +113,6 @@
 #include "ofNode.h"
 
 //--------------------------
-#ifdef OF_LEGACY_INCLUDE_STD
 using namespace std;
-#else
 
-// this will eventually be disabled by default
-#define OF_USE_MINIMAL_STD
-    #ifdef OF_USE_MINIMAL_STD
-using std::cout;
-using std::deque;
-using std::endl;
-using std::make_shared;
-using std::map;
-using std::max;
-using std::pair;
-using std::shared_ptr;
-using std::string;
-using std::stringstream;
-using std::swap;
-using std::to_string;
-using std::vector;
-using std::weak_ptr;
-    #endif
 #endif
