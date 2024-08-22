@@ -1,6 +1,6 @@
-# ofLogExample
+# loggingExample
 
-![Screenshot of ofLogExample](ofLogExample.png)
+![Screenshot of loggingExample](loggingExample.png)
 
 ### Learning Objectives
 

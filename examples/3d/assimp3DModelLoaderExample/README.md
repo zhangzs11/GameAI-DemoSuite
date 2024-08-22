@@ -1,5 +1,5 @@
 # About assimpExample
-![Screenshot of Example](assimp3DModelLoaderExample.gif)
+![Screenshot of Example](assimpExample.gif)
 
 ### Learning Objectives
 

@@ -1,6 +1,6 @@
 #Level1_simpleColorKey
 --
-![Screenshot of Example](simpleColorKeyExample.png)
+![Screenshot of Example](simpleColorKey.png)
 
 ### Learning Objectives
 

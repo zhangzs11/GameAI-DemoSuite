@@ -8,8 +8,6 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-	
-		void renderScene(bool bShadowPass);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -29,9 +27,4 @@ class ofApp : public ofBaseApp{
 		ofVboMesh mesh;
 		ofShader shader;
 		ofEasyCam camera;
-	
-	ofLight light;
-	ofShader mDepthShader;
-	ofMaterial matFloor;
-	
 };

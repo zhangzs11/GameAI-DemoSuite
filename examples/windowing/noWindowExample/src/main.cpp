@@ -4,12 +4,12 @@
 
 int main() {
 
-	auto window = std::make_shared<ofAppNoWindow>();
+	auto window = make_shared<ofAppNoWindow>();
 
 	//to have a normal windowed app comment the line above and uncomment the lines below
 	//ofGLWindowSettings settings;
 	//auto window = ofCreateWindow(settings);
 	
-	ofRunApp(window, std::make_shared<ofApp>());
+	ofRunApp(window, make_shared<ofApp>());
 	ofRunMainLoop();
 }

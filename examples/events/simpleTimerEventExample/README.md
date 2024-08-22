@@ -1,6 +1,6 @@
-# About simpleTimerEventExample
+# About simpleTimer
 
-![Screenshot of simpleTimerEventExample](simpleTimerEventExample.png)
+![Screenshot of simpleTimer](simpleTimer.png)
 
 
 ### Learning Objectives

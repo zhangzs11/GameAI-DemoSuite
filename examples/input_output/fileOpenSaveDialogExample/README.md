@@ -1,6 +1,6 @@
 # About fileOpenSaveDialogExample
 
-![Screenshot of Example, stored as exampleName/screenshot.png (or .gif or .jpg)](fileOpenSaveDialogExample.png)
+![Screenshot of Example, stored as exampleName/screenshot.png (or .gif or .jpg)](fileOpenSaveDialog.png)
 
 
 ### Learning Objectives

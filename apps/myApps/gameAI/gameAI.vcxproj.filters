@@ -7,67 +7,300 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ofApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\BaseEngine.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\DefaultTheme.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineGLFW.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineOpenFrameworks.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineOpenGLES.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\Gui.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\ImHelpers.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\ofxImGuiLoggerChannel.cpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw_context_support.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl2.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\extras\imgui_stdlib.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\extras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_demo.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_draw.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_tables.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_widgets.cpp">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
       <UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Goap">
-      <UniqueIdentifier>{e26f96c8-5e3d-4bf6-9832-2b43fc451be1}</UniqueIdentifier>
+    <Filter Include="src\BehaviorTree">
+      <UniqueIdentifier>{CA04DC80--E1F-D-46-5F-9-D3A-9E72ECC3298B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Goap\Core">
-      <UniqueIdentifier>{1659b240-6684-43c1-8538-69fc7cf72c16}</UniqueIdentifier>
+    <Filter Include="src\DecisionTree">
+      <UniqueIdentifier>{71CD76ED--345-B-43-4C-9-33D-6D45A76BCD49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Goap\MyAction">
-      <UniqueIdentifier>{abe1cfac-6c5e-4ce2-a70f-f51f919ac2c6}</UniqueIdentifier>
+    <Filter Include="src\Goap">
+      <UniqueIdentifier>{0A06147B--A37-0-4C-D7-B-39A-66270E612A03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Goap\Core">
+      <UniqueIdentifier>{49D29004--694-C-4B-78-A-129-E8BE3426E6DF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Goap\MyActions">
+      <UniqueIdentifier>{0C1FDACB--600-3-44-86-8-315-0720BEB6B49E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Movements">
+      <UniqueIdentifier>{9E322E2C--6BC-3-44-12-8-267-6E441BE804B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Objects">
+      <UniqueIdentifier>{C9F6F793--093-0-4C-32-9-2FD-388FD0B56671}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Pathfinding">
+      <UniqueIdentifier>{D42C6259--304-2-49-3B-8-15A-D1000B3EC758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons">
+      <UniqueIdentifier>{5E020BA3--2B1-F-4D-42-A-112-AE80A3811003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui">
+      <UniqueIdentifier>{597C395A--F08-3-42-CD-B-4B8-6429E375CE40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\src">
+      <UniqueIdentifier>{EB34CFBB--930-1-48-97-9-5B9-C39F3C884DFA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\libs">
+      <UniqueIdentifier>{E673DCCA--18F-8-4E-CE-8-FFC-877A1142B120}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\libs\imgui">
+      <UniqueIdentifier>{46EA3F29--7BE-4-44-1F-B-06D-36A231B4437F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\libs\imgui\backends">
+      <UniqueIdentifier>{ED1F898C--AE5-1-4D-A7-B-B8F-CF38615FC0C9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\libs\imgui\extras">
+      <UniqueIdentifier>{4C54010B--823-E-40-DC-B-718-5C765B6F26FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxImGui\libs\imgui\src">
+      <UniqueIdentifier>{B5536B57--217-1-47-13-8-1C0-553A3AA9F8F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Demos">
+      <UniqueIdentifier>{4c39b7e1-95d8-43e3-aa89-d44b2d8f6658}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\KinematicMotion.h" />
-    <ClInclude Include="src\DynamicSteeringBehaviours.h" />
-    <ClInclude Include="src\WanderBehaviours.h" />
-    <ClInclude Include="src\FlockingBehavior.h" />
-    <ClInclude Include="src\Character.h" />
-    <ClInclude Include="src\Graph.h" />
-    <ClInclude Include="src\DecisionTree.h" />
-    <ClInclude Include="src\BehaviorTree.h" />
-    <ClInclude Include="src\Blackboard.h" />
-    <ClInclude Include="src\myBTnodes.h" />
-    <ClInclude Include="src\GoapAction.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\BehaviorTree\BasicBehaviorTree.h">
+      <Filter>src\BehaviorTree</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapPlanner.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\BehaviorTree\Blackboard.h">
+      <Filter>src\BehaviorTree</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapStatus.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\BehaviorTree\MyBehaviorTree.h">
+      <Filter>src\BehaviorTree</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapMemory.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\DecisionTree\BasicDecisionTree.h">
+      <Filter>src\DecisionTree</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapAgent.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\DecisionTree\MyDecisionTree.h">
+      <Filter>src\DecisionTree</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapSensor.h">
-      <Filter>Goap\Core</Filter>
+    <ClInclude Include="src\Goap\Core\GoapAgent.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapGoToTargetAction.h">
-      <Filter>Goap\MyAction</Filter>
+    <ClInclude Include="src\Goap\Core\GoapMemory.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapGoRandomAction.h">
-      <Filter>Goap\MyAction</Filter>
+    <ClInclude Include="src\Goap\Core\GoapPlanner.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapFindMonsterAction.h">
-      <Filter>Goap\MyAction</Filter>
+    <ClInclude Include="src\Goap\Core\GoapSensor.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapShootAction.h">
-      <Filter>Goap\MyAction</Filter>
+    <ClInclude Include="src\Goap\Core\GoapStatus.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\GoapDanceAction.h">
-      <Filter>Goap\MyAction</Filter>
+    <ClInclude Include="src\Movements\Arrive.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\BasicMovement.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\Evade.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\Flee.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\Pursue.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\Seek.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Movements\Wander.h">
+      <Filter>src\Movements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Objects\BasicObject.h">
+      <Filter>src\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Objects\Character.h">
+      <Filter>src\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pathfinding\Graph.h">
+      <Filter>src\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pathfinding\Grid.h">
+      <Filter>src\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pathfinding\Map.h">
+      <Filter>src\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pathfinding\PathFinder.h">
+      <Filter>src\Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ofApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\BaseEngine.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\BaseTheme.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\DefaultTheme.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineGLFW.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineOpenFrameworks.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineOpenGLES.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineVk.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\gles1CompatibilityHacks.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\glfwCompatibilityHacks.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\Gui.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\imconfig.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ImHelpers.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\LinkedList.hpp">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGui.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGuiConstants.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGuiLoggerChannel.h">
+      <Filter>addons\ofxImGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw.h">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw_context_support.h">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl2.h">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>addons\ofxImGui\libs\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\extras\imgui_stdlib.h">
+      <Filter>addons\ofxImGui\libs\imgui\extras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui.h">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_internal.h">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_rectpack.h">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_textedit.h">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_truetype.h">
+      <Filter>addons\ofxImGui\libs\imgui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demos\DemoBase.h">
+      <Filter>src\Demos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demos\MovementDemo.h">
+      <Filter>src\Demos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demos\PathfindingDemo.h">
+      <Filter>src\Demos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demos\BehaviorTreeDemo.h">
+      <Filter>src\Demos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demos\GoapDemo.h">
+      <Filter>src\Demos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Goap\Core\GoapAction.h">
+      <Filter>src\Goap\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

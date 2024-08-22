@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
     <LatestTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</LatestTargetPlatformVersion>
-    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
     <TargetPlatformVersion>$(WindowsTargetPlatformVersion)</TargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
@@ -61,7 +61,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\BehaviorTree;src\DecisionTree;src\Goap\Core;src\Goap\MyActions;src\Movements;src\Objects;src\Pathfinding;..\..\..\addons\ofxImGui\libs;..\..\..\addons\ofxImGui\libs\imgui;..\..\..\addons\ofxImGui\libs\imgui\backends;..\..\..\addons\ofxImGui\libs\imgui\docs;..\..\..\addons\ofxImGui\libs\imgui\extras;..\..\..\addons\ofxImGui\libs\imgui\src;..\..\..\addons\ofxImGui\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)\Build\%(RelativeDir)\$(Configuration)\</ObjectFileName>
@@ -84,7 +84,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\BehaviorTree;src\DecisionTree;src\Goap\Core;src\Goap\MyActions;src\Movements;src\Objects;src\Pathfinding;..\..\..\addons\ofxImGui\libs;..\..\..\addons\ofxImGui\libs\imgui;..\..\..\addons\ofxImGui\libs\imgui\backends;..\..\..\addons\ofxImGui\libs\imgui\docs;..\..\..\addons\ofxImGui\libs\imgui\extras;..\..\..\addons\ofxImGui\libs\imgui\src;..\..\..\addons\ofxImGui\src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <ObjectFileName>$(IntDir)\Build\%(RelativeDir)\$(Configuration)\</ObjectFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -106,30 +106,84 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\BaseEngine.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\DefaultTheme.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineGLFW.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineOpenFrameworks.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\EngineOpenGLES.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\Gui.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\ImHelpers.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\src\ofxImGuiLoggerChannel.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw_context_support.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\extras\imgui_stdlib.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_demo.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_tables.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\GoapAction.h" />
-    <ClInclude Include="src\BehaviorTree.h" />
-    <ClInclude Include="src\Blackboard.h" />
-    <ClInclude Include="src\Character.h" />
-    <ClInclude Include="src\DecisionTree.h" />
-    <ClInclude Include="src\DynamicSteeringBehaviours.h" />
-    <ClInclude Include="src\FlockingBehavior.h" />
-    <ClInclude Include="src\GoapAgent.h" />
-    <ClInclude Include="src\GoapDanceAction.h" />
-    <ClInclude Include="src\GoapFindMonsterAction.h" />
-    <ClInclude Include="src\GoapGoRandomAction.h" />
-    <ClInclude Include="src\GoapGoToTargetAction.h" />
-    <ClInclude Include="src\GoapMemory.h" />
-    <ClInclude Include="src\GoapSensor.h" />
-    <ClInclude Include="src\GoapShootAction.h" />
-    <ClInclude Include="src\GoapStatus.h" />
-    <ClInclude Include="src\Graph.h" />
-    <ClInclude Include="src\myBTnodes.h" />
+    <ClInclude Include="src\Demos\BehaviorTreeDemo.h" />
+    <ClInclude Include="src\Demos\DemoBase.h" />
+    <ClInclude Include="src\Demos\GoapDemo.h" />
+    <ClInclude Include="src\Demos\MovementDemo.h" />
+    <ClInclude Include="src\Demos\PathfindingDemo.h" />
+    <ClInclude Include="src\Goap\Core\GoapAction.h" />
     <ClInclude Include="src\ofApp.h" />
-    <ClInclude Include="src\KinematicMotion.h" />
-    <ClInclude Include="src\GoapPlanner.h" />
-    <ClInclude Include="src\WanderBehaviours.h" />
+    <ClInclude Include="src\BehaviorTree\BasicBehaviorTree.h" />
+    <ClInclude Include="src\BehaviorTree\Blackboard.h" />
+    <ClInclude Include="src\BehaviorTree\MyBehaviorTree.h" />
+    <ClInclude Include="src\DecisionTree\BasicDecisionTree.h" />
+    <ClInclude Include="src\DecisionTree\MyDecisionTree.h" />
+    <ClInclude Include="src\Goap\Core\GoapAgent.h" />
+    <ClInclude Include="src\Goap\Core\GoapMemory.h" />
+    <ClInclude Include="src\Goap\Core\GoapPlanner.h" />
+    <ClInclude Include="src\Goap\Core\GoapSensor.h" />
+    <ClInclude Include="src\Goap\Core\GoapStatus.h" />
+    <ClInclude Include="src\Movements\Arrive.h" />
+    <ClInclude Include="src\Movements\BasicMovement.h" />
+    <ClInclude Include="src\Movements\Evade.h" />
+    <ClInclude Include="src\Movements\Flee.h" />
+    <ClInclude Include="src\Movements\Pursue.h" />
+    <ClInclude Include="src\Movements\Seek.h" />
+    <ClInclude Include="src\Movements\Wander.h" />
+    <ClInclude Include="src\Objects\BasicObject.h" />
+    <ClInclude Include="src\Objects\Character.h" />
+    <ClInclude Include="src\Pathfinding\Graph.h" />
+    <ClInclude Include="src\Pathfinding\Grid.h" />
+    <ClInclude Include="src\Pathfinding\Map.h" />
+    <ClInclude Include="src\Pathfinding\PathFinder.h" />
+    <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\BaseEngine.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\BaseTheme.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\DefaultTheme.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineGLFW.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineOpenFrameworks.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineOpenGLES.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\EngineVk.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\gles1CompatibilityHacks.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\glfwCompatibilityHacks.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\Gui.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\imconfig.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ImHelpers.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\LinkedList.hpp" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGui.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGuiConstants.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\src\ofxImGuiLoggerChannel.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_glfw_context_support.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl2.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\extras\imgui_stdlib.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imgui_internal.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_rectpack.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_textedit.h" />
+    <ClInclude Include="..\..\..\addons\ofxImGui\libs\imgui\src\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
