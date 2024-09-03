@@ -22,18 +22,6 @@ public:
     // purse character arrive
     std::shared_ptr<Arrive> purseTargetCharacterArriveMovement;
 
-
-    // Arrive
-
-    // Evade
-
-    // Flee
-
-    // Purse
-
-    // Seek
-
-
     void setup() override {
         movements.push_back(std::make_shared<Arrive>(&mainCharacter,100.0f, 50.0f, 50.0f, 10.0f));
         movements.push_back(std::make_shared<Evade>(&mainCharacter, 100.0f, 50.0f, &evadeTargetCharacter, 25.0f));
@@ -172,7 +160,6 @@ public:
 
         if (std::dynamic_pointer_cast<Flee>(currentMovement)) {
             auto fleeMovement = std::dynamic_pointer_cast<Flee>(currentMovement);
-
         }
 
         if (std::dynamic_pointer_cast<Pursue>(currentMovement)) {
@@ -203,7 +190,6 @@ public:
 
         if (std::dynamic_pointer_cast<Seek>(currentMovement)) {
             auto seekMovement = std::dynamic_pointer_cast<Seek>(currentMovement);
-
         }
         // 其他Movement特有参数...
 

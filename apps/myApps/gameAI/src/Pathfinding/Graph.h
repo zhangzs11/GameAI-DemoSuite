@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Utils.h"
 class Node {
 public:
@@ -43,17 +43,82 @@ public:
 
 public:
     void addVertex(int id, float x, float y) {
+        if (vertices.find(id) != vertices.end()) {
+            std::cout << "Vertex ID already exists!" << std::endl;
+            return;
+        }
         vertices[id] = Node(id, ofVec2f(x, y));
     }
 
-    void addEdge(const DirectedWeightedEdge& edge) {
+    void addEdge(int sourceId, int sinkId, float weight) {
+        if (vertices.find(sourceId) == vertices.end() || vertices.find(sinkId) == vertices.end()) {
+            std::cout << "One or both vertices do not exist!" << std::endl;
+            return;
+        }
+
+        DirectedWeightedEdge edge(sourceId, sinkId, weight);
         edges.push_back(edge);
     }
-    void addEdgeDouble(const DirectedWeightedEdge& edge) {
-        edges.push_back(edge);
-        DirectedWeightedEdge edge2(edge.getSink(), edge.getSource(), edge.getWeight());
+
+    void addEdgeDouble(int nodeId1, int nodeId2, float weight) {
+        if (vertices.find(nodeId1) == vertices.end() || vertices.find(nodeId2) == vertices.end()) {
+            std::cout << "One or both vertices do not exist!" << std::endl;
+            return;
+        }
+
+        DirectedWeightedEdge edge1(nodeId1, nodeId2, weight);
+        DirectedWeightedEdge edge2(nodeId2, nodeId1, weight);
+        edges.push_back(edge1);
         edges.push_back(edge2);
     }
+
+    void deleteVertex(int id) {
+        // 先检查节点是否存在
+        if (vertices.find(id) == vertices.end()) {
+            std::cout << "Vertex ID does not exist!" << std::endl;
+            return;
+        }
+
+        // 删除所有与该节点相关的边
+        edges.erase(
+            std::remove_if(
+                edges.begin(),
+                edges.end(),
+                [id](const DirectedWeightedEdge& edge) {
+                    return edge.getSource() == id || edge.getSink() == id;
+                }),
+            edges.end()
+        );
+
+        // 删除节点
+        vertices.erase(id);
+    }
+
+    // 删除边的方法
+    void deleteEdge(int sourceId, int sinkId) {
+        if (vertices.find(sourceId) == vertices.end() || vertices.find(sinkId) == vertices.end()) {
+            std::cout << "One or both vertices do not exist!" << std::endl;
+            return;
+        }
+
+        // 删除从 sourceId 到 sinkId 的边
+        edges.erase(
+            std::remove_if(
+                edges.begin(),
+                edges.end(),
+                [sourceId, sinkId](const DirectedWeightedEdge& edge) {
+                    return edge.getSource() == sourceId && edge.getSink() == sinkId;
+                }),
+            edges.end()
+        );
+    }
+
+    // 删除双向边的方法
+    void deleteEdgeDouble(int nodeId1, int nodeId2) {
+        deleteEdge(nodeId1, nodeId2);
+        deleteEdge(nodeId2, nodeId1);
+    }
+
 
     std::vector<DirectedWeightedEdge> getOutgoingEdges(int source) const {
         std::vector<DirectedWeightedEdge> outgoingEdges;
@@ -199,6 +264,10 @@ public:
     }
 
     void drawPath(std::vector<int> path) const {
+        if (path.size() < 2) {
+            return;  // ??????????????????????
+        }
+
         ofSetColor(ofColor::red);
         for (size_t i = 0; i < path.size() - 1; ++i) {
             int source = path[i];

@@ -4,11 +4,12 @@
 
 class PolygonCollision {
 public:
+    int id;
     std::vector<ofVec2f> vertices; //clockwise
 
-    PolygonCollision(const std::vector<ofVec2f>& vertices) : vertices(vertices) {}
+    PolygonCollision(int id, const std::vector<ofVec2f>& vertices) : id(id), vertices(vertices) {}
 
-    PolygonCollision(std::initializer_list<ofVec2f> verts) : vertices(verts) {}
+    PolygonCollision(int id, std::initializer_list<ofVec2f> verts) : id(id), vertices(verts) {}
 
     void drawPolygon() const {
         if (vertices.size() < 2) return;
@@ -71,18 +72,14 @@ bool rayIntersectsPolygon(const ofVec2f& rayOrigin, const ofVec2f& rayDirection,
     return intersects;
 }
 
-bool willCollide(const ofVec2f& playerPosition, const ofVec2f& targetPosition, const std::vector<PolygonCollision>& collisionList) {
+bool willCollide(const ofVec2f& playerPosition, const ofVec2f& targetPosition, const PolygonCollision& polygon) {
     ofVec2f rayDirection = targetPosition - playerPosition;
-    for (const auto& polygon : collisionList) {
-        if (rayIntersectsPolygon(playerPosition, rayDirection, polygon)) {
-            return true;
-        }
-    }
-    return false;
+    return rayIntersectsPolygon(playerPosition, rayDirection, polygon);
 }
+
 class Map {
 public:
-	std::vector<PolygonCollision> collisionList;
+    std::vector<PolygonCollision> collisionList;
 	DirectedGraph* graph;
     Grid* grid;
 
@@ -94,16 +91,22 @@ public:
 
         for (const auto& [id, node] : graph->vertices) {
             ofVec2f nodePosition = mapToScreenCoordinates(node.position);
-            if (!willCollide(nodePosition, clickPosition, collisionList)) {
+
+            bool collisionDetected = false;
+            for (const auto& polygon : collisionList) {
+                if (willCollide(nodePosition, clickPosition, polygon)) {
+                    collisionDetected = true;
+                    break;
+                }
+            }
+            if (!collisionDetected) {
                 float distance = clickPosition.distance(nodePosition);
                 if (distance < nearestDistance) {
                     nearestDistance = distance;
                     nearestNodeId = id;
-                    //std::cout << "nearest Node ID : " << id << "  Distance : "<< nearestDistance <<std::endl;
                 }
             }
         }
-
         return nearestNodeId;
     }
 
@@ -123,5 +126,33 @@ public:
 
         // 如果没有点击到任何节点，返回 -1 无效的 ID
         return -1;
+    }
+
+    // 添加多边形
+    void addPolygon(int id, const std::vector<ofVec2f>& vertices) {
+        if (vertices.size() < 3) {
+            std::cout << "A polygon must have at least 3 vertices." << std::endl;
+            return;
+        }
+
+        // Check ID
+        for (const auto& polygon : collisionList) {
+            if (polygon.id == id) {
+                std::cout << "Polygon ID already exists!" << std::endl;
+                return;
+            }
+        }
+
+        PolygonCollision newPolygon(id, vertices);
+        collisionList.push_back(newPolygon);
+    }
+
+    // 删除多边形障碍物
+    void removePolygon(int id) {
+        collisionList.erase(
+            std::remove_if(collisionList.begin(), collisionList.end(),
+                [id](const PolygonCollision& polygon) { return polygon.id == id; }),
+            collisionList.end()
+        );
     }
 };
