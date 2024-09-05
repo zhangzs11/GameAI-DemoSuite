@@ -123,16 +123,6 @@ void loadMapFromJson(Map& map, const std::string& filename) {
     std::cout << "Map loaded from " << fullPath << std::endl;
 }
 
-enum ModeType {
-    Add_Node,
-    Remove_Node,
-    Add_Edge,
-    Remove_Edge,
-    Add_Obstacle,
-    Remove_Obstacle,
-    Path_Finding
-};
-
 // Heuristics 
 inline float manhattanDistance(int current, int goal, const std::unordered_map<int, Node>& vertices) {
     auto& currentVertex = vertices.at(current);
@@ -156,11 +146,11 @@ public:
     std::shared_ptr<Seek> seekBehavior;
     PathFinder pathFinder;
 
-    ModeType currentMode;
+    int currentMode;
 
     void setup() override {
         // Init character
-        mainCharacter.position = ofVec2f(100, 100);
+        mainCharacter.position = ofVec2f(0.5, 0.5);
         mainCharacter.color = ofColor::blue;
         mainCharacter.radius = 20;
         mainCharacter.isDead = false;
@@ -192,6 +182,11 @@ public:
         for (const auto& polygon : map.collisionList) {
             polygon.drawPolygon();
         }
+        //std::cout << "currentDemoMode : " << currentMode << std::endl;
+        if (currentMode == 4) {
+            mainCharacter.draw();
+            //std::cout << "draw character" << std::endl;
+        }
         renderImGui();
     }
 
@@ -199,8 +194,8 @@ public:
         ImGui::Begin("Path finding");
 
         // 选择操作mode
-        const char* modes[] = { "Graph Editing", "Obstacle Editing", "Pathfinding Settings", "Save/Load Map" };
-        static int currentMode = 0;
+        const char* modes[] = { "Graph Editing", "Obstacle Editing", "Pathfinding Settings", "Save/Load Map", "start pathFinding!"};
+        //static int currentMode = 0;
 
         ImGui::Combo("Edit Mode", &currentMode, modes, IM_ARRAYSIZE(modes));
 
@@ -385,6 +380,11 @@ public:
             }
         }
 
+        // pathfinding展示
+        if (currentMode == 4 && ImGui::CollapsingHeader("path finding")) {
+            
+        }
+
         ImGui::End();
 
     }
@@ -394,52 +394,26 @@ public:
     }
 
     void mousePressed(int x, int y, int button) override {
-        switch (currentMode) {
-            case Add_Node: {
-                // addVertex(38, 0.45f, 0.6f);
-                break;
-            }
-            case Remove_Node: {
-                // addVertex(38, 0.45f, 0.6f);
-                break;
-            }
-            case Add_Edge: {
-                // addEdge(DirectedWeightedEdge(1, 2, 13.0f));
-                break;
-            }
-            case Remove_Edge: {
-                // addEdge(DirectedWeightedEdge(1, 2, 13.0f));
-                break;
-            }
-            case Add_Obstacle: {
-                // collisionList.push_back(PolygonCollision(ofVec2f(0.53, 0.53), ofVec2f(0.53, 0.67), ofVec2f(0.67, 0.53)));
-                break;
-            }
-            case Remove_Obstacle: {
-                // collisionList.push_back(PolygonCollision(ofVec2f(0.53, 0.53), ofVec2f(0.53, 0.67), ofVec2f(0.67, 0.53)));
-                break;
-            }
-            case Path_Finding: {
+        if (currentMode == 4) {
+            ofVec2f targetPoint = pathFinder.GetPositionOnMouseClick(x, y);
 
-                ofVec2f targetPoint = pathFinder.GetPositionOnMouseClick(x, y);
+            std::cout << "target position" << targetPoint << std::endl;
 
-                float normalizedX = static_cast<float>(targetPoint.x) / ofGetWidth();
-                float normalizedY = static_cast<float>(targetPoint.y) / ofGetHeight();
-                float normalizedCharacterX = static_cast<float>(mainCharacter.position.x) / ofGetWidth();
-                float normalizedCharacterY = static_cast<float>(mainCharacter.position.y) / ofGetHeight();
+            float normalizedX = static_cast<float>(targetPoint.x) / ofGetWidth();
+            float normalizedY = static_cast<float>(targetPoint.y) / ofGetHeight();
+            float normalizedCharacterX = static_cast<float>(mainCharacter.position.x) / ofGetWidth();
+            float normalizedCharacterY = static_cast<float>(mainCharacter.position.y) / ofGetHeight();
 
-                pathFinder.targetPosition.set(targetPoint.x, targetPoint.y);
-                pathFinder.startNode = map.findNearestReachableNodeToClick(mainCharacter.position.x, mainCharacter.position.y);
-                pathFinder.goalNode = map.findNearestReachableNodeToClick(targetPoint.x, targetPoint.y);
-                pathFinder.currentNodeIndex = 0;
-                pathFinder.nextNodeIndex = 1;
+            pathFinder.targetPosition.set(targetPoint.x, targetPoint.y);
+            pathFinder.startNode = map.findNearestReachableNodeToClick(mainCharacter.position.x, mainCharacter.position.y);
+            pathFinder.goalNode = map.findNearestReachableNodeToClick(targetPoint.x, targetPoint.y);
+            pathFinder.currentNodeIndex = 0;
+            pathFinder.nextNodeIndex = 1;
 
-                auto result = graph.aStar(pathFinder.startNode, pathFinder.goalNode, manhattanDistance);
-                auto came_from = result.first;
-                pathFinder.path = graph.getPath(pathFinder.goalNode, came_from);
-                isPathFinding = true;
-                break;
-            }
+            auto result = graph.aStar(pathFinder.startNode, pathFinder.goalNode, manhattanDistance);
+            auto came_from = result.first;
+            pathFinder.path = graph.getPath(pathFinder.goalNode, came_from);
+            isPathFinding = true;
         }
     }
 };

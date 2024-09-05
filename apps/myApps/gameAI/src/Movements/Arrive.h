@@ -51,10 +51,12 @@ public:
                 character->orientation = atan2(character->velocity.y, character->velocity.x);
             }
             wrapAroundScreen();
+            std::cout << "arrive: character->velocity * deltaTime: " << character->velocity * deltaTime << std::endl;
             return;
         }
         else
         {
+            std::cout << "no move on arrive" << std::endl;
             return;
         }
     }
