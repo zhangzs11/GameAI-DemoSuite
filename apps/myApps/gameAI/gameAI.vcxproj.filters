@@ -123,6 +123,9 @@
     <Filter Include="src\Demos">
       <UniqueIdentifier>{4c39b7e1-95d8-43e3-aa89-d44b2d8f6658}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\include">
+      <UniqueIdentifier>{a222717b-5937-4ee4-b8cb-5b91ce2071c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
@@ -301,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="src\Goap\Core\GoapAction.h">
       <Filter>src\Goap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\json.hpp">
+      <Filter>src\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
