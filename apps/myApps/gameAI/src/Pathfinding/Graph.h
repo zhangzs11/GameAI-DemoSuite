@@ -119,6 +119,10 @@ public:
         deleteEdge(nodeId2, nodeId1);
     }
 
+    void clearEdgeAndVertice() {
+        edges.clear();    // 清空所有边
+        vertices.clear(); // 清空所有节点
+    }
 
     std::vector<DirectedWeightedEdge> getOutgoingEdges(int source) const {
         std::vector<DirectedWeightedEdge> outgoingEdges;

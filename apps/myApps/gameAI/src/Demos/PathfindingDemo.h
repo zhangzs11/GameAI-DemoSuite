@@ -146,6 +146,8 @@ public:
     std::shared_ptr<Seek> seekBehavior;
     PathFinder pathFinder;
 
+    std::vector<ofVec2f> newObstacleVertices;
+
     int currentMode;
 
     void setup() override {
@@ -182,10 +184,12 @@ public:
         for (const auto& polygon : map.collisionList) {
             polygon.drawPolygon();
         }
-        //std::cout << "currentDemoMode : " << currentMode << std::endl;
         if (currentMode == 4) {
             mainCharacter.draw();
-            //std::cout << "draw character" << std::endl;
+        }
+        for (ofVec2f vertexPosition : newObstacleVertices) {
+            ofSetColor(ofColor::azure);
+            ofDrawCircle(vertexPosition.x * ofGetWidth(), vertexPosition.y * ofGetHeight(), 2);
         }
         renderImGui();
     }
@@ -205,7 +209,13 @@ public:
             static float newNodePosition[2] = { 0.5f, 0.5f };  // 初始位置
 
             ImGui::InputInt("New Node ID", &newNodeId);  // 输入新节点ID
-            ImGui::InputFloat2("New Node Position", newNodePosition);  // 输入新节点位置
+            ImGui::Text("New Node Position");
+            ImGui::Text("X: ");  // 显示 "X:"
+            ImGui::SameLine();  // 在同一行显示
+            ImGui::SliderFloat("##X", &newNodePosition[0], 0.0f, 1.0f);  // X 坐标的滑块
+            ImGui::Text("Y: ");  // 显示 "Y:"
+            ImGui::SameLine();  // 在同一行显示
+            ImGui::SliderFloat("##Y", &newNodePosition[1], 0.0f, 1.0f);  // Y 坐标的滑块
 
             if (ImGui::Button("Add Node")) {
                 graph.addVertex(newNodeId, newNodePosition[0], newNodePosition[1]);
@@ -308,16 +318,26 @@ public:
 
         if (currentMode == 1 && ImGui::CollapsingHeader("Obstacle Editing")) {
             // 添加多边形障碍物
-            static std::vector<ofVec2f> newObstacleVertices;
+            //static std::vector<ofVec2f> newObstacleVertices;
             static float vertexPos[2] = { 0.0f, 0.0f };
             static int polygonId = 0;
 
             ImGui::InputInt("Polygon ID", &polygonId);  // 手动输入多边形ID
-            ImGui::InputFloat2("New Vertex Position", vertexPos);
+            ImGui::Text("New Vertex Position");
+            ImGui::Text("X: ");  // 显示 "X:"
+            ImGui::SameLine();  // 在同一行显示
+            ImGui::SliderFloat("##X", &vertexPos[0], 0.0f, 1.0f);  // X 坐标的滑块
+
+            ImGui::Text("Y: ");  // 显示 "Y:"
+            ImGui::SameLine();  // 在同一行显示
+            ImGui::SliderFloat("##Y", &vertexPos[1], 0.0f, 1.0f);  // Y 坐标的滑块
             if (ImGui::Button("Add Vertex")) {
                 newObstacleVertices.push_back(ofVec2f(vertexPos[0], vertexPos[1]));
             }
-
+            if (ImGui::Button("Undo adding Vertex")) {
+                if(!newObstacleVertices.empty())
+                    newObstacleVertices.pop_back();
+            }
             if (ImGui::Button("Create Obstacle") && newObstacleVertices.size() >= 3) {
                 map.addPolygon(polygonId, newObstacleVertices);
                 newObstacleVertices.clear();  // 清空，准备创建下一个障碍物
@@ -341,6 +361,20 @@ public:
             if (ImGui::Button("Delete Obstacle") && selectedObstacle != -1) {
                 map.removePolygon(selectedObstacle);
                 selectedObstacle = -1;  // 重置选择
+            }
+
+            // 自动生成节点的设置
+            static float nodeDensity = 1.0f;
+            static float maxDistanceFactor = 1.0f;
+            ImGui::Text("Node Generation Settings:");
+            ImGui::SliderFloat("Node Density", &nodeDensity, 1.0f, 10.0f);  // 控制节点密度
+            ImGui::SliderFloat("Max Distance Factor", &maxDistanceFactor, 1.0f, 3.0f);  // 控制最大连接距离系数
+            if (ImGui::Button("Auto Generate Nodes")) {
+                map.graph->clearEdgeAndVertice();
+                map.generateNodes(nodeDensity, maxDistanceFactor);
+            }
+            if (ImGui::Button("Clear All Nodes")) {
+                map.graph->clearEdgeAndVertice();  // 清空所有节点
             }
         }
 
@@ -382,7 +416,27 @@ public:
 
         // pathfinding展示
         if (currentMode == 4 && ImGui::CollapsingHeader("path finding")) {
-            
+            float maxForce = arriveBehavior->getMaxForce();
+            if (ImGui::SliderFloat("Max Acceleration", &maxForce, 0.0f, 10000.0f)) {
+                arriveBehavior->setMaxForce(maxForce);
+                seekBehavior->setMaxForce(maxForce);
+            }
+
+            float maxSpeed = arriveBehavior->getMaxSpeed();
+            if (ImGui::SliderFloat("Max Speed", &maxSpeed, 0.0f, 20000.0f)) {
+                arriveBehavior->setMaxSpeed(maxSpeed);
+                seekBehavior->setMaxSpeed(maxSpeed);
+            }
+
+            float slowingRadius = arriveBehavior->getSlowingRadius();
+            if (ImGui::SliderFloat("Slowing Radius", &slowingRadius, 0.0f, 100.0f)) {
+                arriveBehavior->setSlowingRadius(slowingRadius);
+            }
+
+            float stopRadius = arriveBehavior->getStopRadius();
+            if (ImGui::SliderFloat("Stop Radius", &stopRadius, 0.0f, 50.0f)) {
+                arriveBehavior->setStopRadius(stopRadius);
+            }
         }
 
         ImGui::End();
@@ -396,8 +450,6 @@ public:
     void mousePressed(int x, int y, int button) override {
         if (currentMode == 4) {
             ofVec2f targetPoint = pathFinder.GetPositionOnMouseClick(x, y);
-
-            std::cout << "target position" << targetPoint << std::endl;
 
             float normalizedX = static_cast<float>(targetPoint.x) / ofGetWidth();
             float normalizedY = static_cast<float>(targetPoint.y) / ofGetHeight();

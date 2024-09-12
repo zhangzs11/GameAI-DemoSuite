@@ -80,6 +80,8 @@ public:
     BehaviourTree(Task* root, Blackboard* blackboard) : root(root), blackboard(blackboard) {}
 
     Status makeDecision() {
+        // TODO：
+        // 不应该每一帧都从root调用run，应该是如果上一帧失败，或成功，这一帧重新从root走，如果上一帧是running，应该是tick直接执行当前的currentTask
         Tick t(blackboard);
         Status result = root->run(t);
         return result;
@@ -198,6 +200,8 @@ public:
         for (Task* child : children) {
             tick.open(*child);
             Status status = tick.execute(*child);
+            // TODO:
+            // 感觉如果还是running的话，不应该close,这样会失去当前的node位置
             tick.close(*child);
             if (status != Status::Success) {
                 return status; // 如果任一子节点失败或运行中，返回该状态
@@ -224,6 +228,10 @@ public:
     BTRepeatUntilFailNode(Task* child) : BTDecoratorNode(child) {}
 
     Status run(Tick& tick) override {
+        // TODO:
+        // 不应该用while,这样如果一直循环，中间的结果就没法提交给渲染了
+        // 应该是open一次，得到current任务，execute，如果成功，不close，这样tick的current就还是当前的任务
+        // 每一帧的调用也不应该是从root，而是直接用tick执行当前的current
         while (true) {
             tick.open(*child);
             Status status = tick.execute(*child);

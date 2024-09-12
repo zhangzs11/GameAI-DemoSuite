@@ -16,23 +16,52 @@ public:
 
         ofSetColor(ofColor::blue);
 
+        ofPath path;  // 创建一个 ofPath 对象
+        path.setFillColor(ofColor::blue);  // 设置填充颜色
         for (size_t i = 0; i < vertices.size(); ++i) {
             ofVec2f currentVertex = vertices[i];
-            ofVec2f nextVertex = vertices[(i + 1) % vertices.size()];
-
-            ofDrawLine(ofPoint(currentVertex.x * ofGetWidth(), currentVertex.y * ofGetHeight()),
-                ofPoint(nextVertex.x * ofGetWidth(), nextVertex.y * ofGetHeight()));
+            if (i == 0) {
+                path.moveTo(currentVertex.x * ofGetWidth(), currentVertex.y * ofGetHeight());  // 移动到第一个顶点
+            }
+            else {
+                path.lineTo(currentVertex.x * ofGetWidth(), currentVertex.y * ofGetHeight());  // 连线到后续的每个顶点
+            }
         }
+        path.close();  // 闭合路径
+        path.draw();   // 绘制实心多边形
 
         ofSetColor(ofColor::white);
     }
 };
+//bool isPointInsidePolygon(const ofVec2f& point, const PolygonCollision& polygon) {
+//    bool inside = false;
+//    for (int i = 0, j = polygon.vertices.size() - 1; i < polygon.vertices.size(); j = i++) {
+//        if (((polygon.vertices[i].y * ofGetHeight() > point.y) != (polygon.vertices[j].y * ofGetHeight() > point.y)) &&
+//            (point.x < (polygon.vertices[j].x * ofGetWidth() - polygon.vertices[i].x * ofGetWidth()) * (point.y - polygon.vertices[i].y * ofGetHeight()) / (polygon.vertices[j].y * ofGetHeight() - polygon.vertices[i].y * ofGetHeight()) + polygon.vertices[i].x * ofGetWidth())) {
+//            inside = !inside;
+//        }
+//    }
+//    return inside;
+//}
+
 bool isPointInsidePolygon(const ofVec2f& point, const PolygonCollision& polygon) {
     bool inside = false;
+    float px = point.x * ofGetWidth();  // 点的像素坐标
+    float py = point.y * ofGetHeight(); // 点的像素坐标
+
     for (int i = 0, j = polygon.vertices.size() - 1; i < polygon.vertices.size(); j = i++) {
-        if (((polygon.vertices[i].y * ofGetHeight() > point.y) != (polygon.vertices[j].y * ofGetHeight() > point.y)) &&
-            (point.x < (polygon.vertices[j].x * ofGetWidth() - polygon.vertices[i].x * ofGetWidth()) * (point.y - polygon.vertices[i].y * ofGetHeight()) / (polygon.vertices[j].y * ofGetHeight() - polygon.vertices[i].y * ofGetHeight()) + polygon.vertices[i].x * ofGetWidth())) {
-            inside = !inside;
+        // 获取多边形的边的两个顶点的像素坐标
+        float xi = polygon.vertices[i].x * ofGetWidth();
+        float yi = polygon.vertices[i].y * ofGetHeight();
+        float xj = polygon.vertices[j].x * ofGetWidth();
+        float yj = polygon.vertices[j].y * ofGetHeight();
+
+        // 检查射线是否穿过多边形的边
+        bool intersect = ((yi > py) != (yj > py)) &&
+            (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+
+        if (intersect) {
+            inside = !inside;  // 交点数为奇数时在内部
         }
     }
     return inside;
@@ -154,5 +183,57 @@ public:
                 [id](const PolygonCollision& polygon) { return polygon.id == id; }),
             collisionList.end()
         );
+    }
+
+    // 自动生成节点函数
+    void generateNodes(float density, float maxDistanceFactor) {  // 密度和最大距离系数作为参数
+        float step = 1.0f / density;  // 根据密度计算步长
+        float maxConnectionDistance = step * maxDistanceFactor;  // 最大连接距离由步长和系数决定
+
+        // 遍历整个地图区域（假设归一化坐标 [0, 1]）
+        for (float x = 0.0f; x <= 1.0f; x += step) {
+            for (float y = 0.0f; y <= 1.0f; y += step) {
+                ofVec2f potentialNode(x, y);  // 生成候选节点位置
+                bool isCollision = false;
+
+                // 检查该位置是否与任何多边形相交
+                for (const auto& polygon : collisionList) {
+                    if (isPointInsidePolygon(potentialNode, polygon)) {
+                        isCollision = true;  // 发生碰撞
+                        break;
+                    }
+                }
+
+                // 如果没有与任何障碍物碰撞，添加该节点
+                if (!isCollision) {
+                    int newId = graph->vertices.size();  // 自动生成节点ID
+                    graph->addVertex(newId, x, y);
+
+                    // 检查与相邻节点的连接并添加边
+                    for (const auto& [id, node] : graph->vertices) {
+                        if (id != newId) {
+                            float distance = potentialNode.distance(node.position);
+                            if (distance <= maxConnectionDistance) {  // 使用基于step的最大距离
+
+                                // 检查两个节点之间是否有障碍物
+                                bool pathBlocked = false;
+                                for (const auto& polygon : collisionList) {
+                                    if (willCollide(mapToScreenCoordinates(potentialNode), mapToScreenCoordinates(node.position), polygon)) {
+                                        pathBlocked = true;
+                                        break;
+                                    }
+                                }
+
+                                // 如果路径没有被障碍物阻挡，添加双向边
+                                if (!pathBlocked) {
+                                    float weight = distance;  // 使用距离作为权重
+                                    graph->addEdgeDouble(newId, id, weight);  // 添加双向边
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 };
