@@ -236,4 +236,99 @@ public:
             }
         }
     }
+
+    // ----------------------------------
+    // 优化的node自动生成
+    //
+    
+    // 判断区域是否完全在多边形内
+    bool isRegionInsidePolygon(const ofRectangle& region, const PolygonCollision& polygon) {
+        return isPointInsidePolygon(region.getTopLeft(), polygon) &&
+            isPointInsidePolygon(region.getTopRight(), polygon) &&
+            isPointInsidePolygon(region.getBottomLeft(), polygon) &&
+            isPointInsidePolygon(region.getBottomRight(), polygon);
+    }
+
+    // 判断区域是否与多边形相交
+    bool doesRegionIntersectPolygon(const ofRectangle& region, const PolygonCollision& polygon) {
+        ofRectangle screenRegion(
+            region.getX() * ofGetWidth(),
+            region.getY() * ofGetHeight(),
+            region.getWidth() * ofGetWidth(),
+            region.getHeight() * ofGetHeight()
+        );
+        for (const auto& vertex : polygon.vertices) {
+            if (screenRegion.inside(vertex.x * ofGetWidth(), vertex.y * ofGetHeight())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 尝试连接到现有节点
+    void connectToExistingNodes(int newNodeId, float maxDistanceFactor) {
+        const ofVec2f& newNodePosition = graph->vertices[newNodeId].position;
+        //float maxConnectionDistance = (1.0f / density) * maxDistanceFactor;  // 基于step的最大距离
+
+        for (const auto& [id, node] : graph->vertices) {
+            if (id != newNodeId) {
+                float distance = newNodePosition.distance(node.position);
+                bool pathBlocked = false;
+                for (const auto& polygon : collisionList) {
+                    if (willCollide(mapToScreenCoordinates(newNodePosition), mapToScreenCoordinates(node.position), polygon)) {
+                        pathBlocked = true;
+                        break;
+                    }
+                }
+
+                if (!pathBlocked) {
+                    float weight = distance;  // 使用距离作为权重
+                    graph->addEdgeDouble(newNodeId, id, weight);  // 添加双向边
+                }
+            }
+        }
+    }
+
+    void generateNodesRecursively(const ofRectangle& region, int maxDepth, float minSize, float maxDistanceFactor) {
+        // 基本终止条件：如果递归深度达到上限或区域太小
+        if (maxDepth <= 0 || region.getWidth() * ofGetWidth() <= minSize || region.getHeight() * ofGetHeight() <= minSize) {
+            return;
+        }
+
+        // 检查区域与障碍物的关系
+        bool hasCollision = false;
+        bool fullyCovered = true;
+
+        for (const auto& polygon : collisionList) {
+            if (isRegionInsidePolygon(region, polygon)) {
+                // 区域完全被障碍物覆盖
+                return;
+            }
+            if (doesRegionIntersectPolygon(region, polygon)) {
+                hasCollision = true;  // 区域与障碍物相交或部分覆盖
+                fullyCovered = false;
+            }
+        }
+
+        // 如果没有障碍物，直接在区域中心生成一个节点
+        if (!hasCollision) {
+            ofVec2f center = region.getCenter();
+            int newId = graph->vertices.size();  // 生成新的节点ID
+            graph->addVertex(newId, center.x, center.y);
+
+            // 尝试连接到现有节点
+            connectToExistingNodes(newId, maxDistanceFactor);
+            return;
+        }
+
+        // 如果部分有障碍物，则继续划分该区域
+        float halfWidth = region.getWidth() / 2.0f;
+        float halfHeight = region.getHeight() / 2.0f;
+
+        // 递归处理四个子区域
+        generateNodesRecursively(ofRectangle(region.getX(), region.getY(), halfWidth, halfHeight), maxDepth - 1, minSize, maxDistanceFactor);  // 左上
+        generateNodesRecursively(ofRectangle(region.getX() + halfWidth, region.getY(), halfWidth, halfHeight), maxDepth - 1, minSize, maxDistanceFactor);  // 右上
+        generateNodesRecursively(ofRectangle(region.getX(), region.getY() + halfHeight, halfWidth, halfHeight), maxDepth - 1, minSize, maxDistanceFactor);  // 左下
+        generateNodesRecursively(ofRectangle(region.getX() + halfWidth, region.getY() + halfHeight, halfWidth, halfHeight), maxDepth - 1, minSize, maxDistanceFactor);  // 右下
+    }
 };

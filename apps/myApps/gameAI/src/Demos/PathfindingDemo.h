@@ -380,12 +380,18 @@ public:
             // 自动生成节点的设置
             static float nodeDensity = 1.0f;
             static float maxDistanceFactor = 1.0f;
+            static int maxDepth = 5.0f;
+            static float minSize = 50.0f;
             ImGui::Text("Node Generation Settings:");
-            ImGui::SliderFloat("Node Density", &nodeDensity, 1.0f, 100.0f);  // 控制节点密度
+            // ImGui::SliderFloat("Node Density", &nodeDensity, 1.0f, 100.0f);  // 控制节点密度
             ImGui::SliderFloat("Max Distance Factor", &maxDistanceFactor, 1.0f, 3.0f);  // 控制最大连接距离系数
+            ImGui::SliderInt("Max Recurse Depth", &maxDepth, 1, 20); // 最大递归深度
+            ImGui::SliderFloat("min deveide size", &minSize, 10.0f, 100.0f); // 最小的递归矩形宽高（像素坐标）
+
             if (ImGui::Button("Auto Generate Nodes")) {
                 map.graph->clearEdgeAndVertice();
-                map.generateNodes(nodeDensity, maxDistanceFactor);
+                // map.generateNodes(nodeDensity, maxDistanceFactor);
+                map.generateNodesRecursively(ofRectangle(0.0f, 0.0f, 1.0f, 1.0f), maxDepth, minSize, maxDistanceFactor);
             }
             if (ImGui::Button("Clear All Nodes")) {
                 map.graph->clearEdgeAndVertice();  // 清空所有节点
@@ -403,7 +409,7 @@ public:
 
         // 添加保存和加载地图的功能
         if (currentMode == 3 && ImGui::CollapsingHeader("Save/Load Map")) {
-            static char fileName[128] = "my_map";  // 默认文件名（不包含后缀）
+            static char fileName[128] = "pathfinding_testmap1";  // 默认文件名（不包含后缀）
             static bool saveSuccess = false;  // 保存成功标志
             static bool loadSuccess = false;  // 加载成功标志
             static std::string savePath;  // 保存的完整路径
