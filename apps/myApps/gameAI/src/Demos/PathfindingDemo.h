@@ -150,11 +150,14 @@ public:
 
     int currentMode;
 
+    // Draw mode
+    bool ifDrawNode = true;
+
     void setup() override {
         // Init character
         mainCharacter.position = ofVec2f(0.5, 0.5);
         mainCharacter.color = ofColor::blue;
-        mainCharacter.radius = 20;
+        mainCharacter.radius = 5;
         mainCharacter.isDead = false;
         isPathFinding = false;
         // Init map
@@ -179,7 +182,9 @@ public:
     }
 
     void draw() override {
-        graph.drawMap();
+        if (ifDrawNode) {
+            graph.drawMap();
+        }
         graph.drawPath(pathFinder.path);
         for (const auto& polygon : map.collisionList) {
             polygon.drawPolygon();
@@ -202,6 +207,15 @@ public:
         //static int currentMode = 0;
 
         ImGui::Combo("Edit Mode", &currentMode, modes, IM_ARRAYSIZE(modes));
+
+        static bool ifDraw = false;
+        ImGui::Checkbox("if Draw Node", &ifDraw);
+        if (ifDraw) {
+            ifDrawNode = true;
+        }
+        else {
+            ifDrawNode = false;
+        }
 
         if (currentMode == 0 && ImGui::CollapsingHeader("Graph Editing")) {
             // 添加节点
@@ -367,7 +381,7 @@ public:
             static float nodeDensity = 1.0f;
             static float maxDistanceFactor = 1.0f;
             ImGui::Text("Node Generation Settings:");
-            ImGui::SliderFloat("Node Density", &nodeDensity, 1.0f, 10.0f);  // 控制节点密度
+            ImGui::SliderFloat("Node Density", &nodeDensity, 1.0f, 100.0f);  // 控制节点密度
             ImGui::SliderFloat("Max Distance Factor", &maxDistanceFactor, 1.0f, 3.0f);  // 控制最大连接距离系数
             if (ImGui::Button("Auto Generate Nodes")) {
                 map.graph->clearEdgeAndVertice();
@@ -375,6 +389,7 @@ public:
             }
             if (ImGui::Button("Clear All Nodes")) {
                 map.graph->clearEdgeAndVertice();  // 清空所有节点
+                isPathFinding = false; // node清空了，停止寻路
             }
         }
 

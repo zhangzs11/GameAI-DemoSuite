@@ -276,15 +276,18 @@ public:
         for (size_t i = 0; i < path.size() - 1; ++i) {
             int source = path[i];
             int sink = path[i + 1];
-            Node sourceVertex = vertices.at(source);
-            Node sinkVertex = vertices.at(sink);
+            if (!vertices.empty())
+            {
+                Node sourceVertex = vertices.at(source);
+                Node sinkVertex = vertices.at(sink);
 
-            float sourceX = sourceVertex.position.x * ofGetWidth();
-            float sourceY = sourceVertex.position.y * ofGetHeight();
-            float sinkX = sinkVertex.position.x * ofGetWidth();
-            float sinkY = sinkVertex.position.y * ofGetHeight();
+                float sourceX = sourceVertex.position.x * ofGetWidth();
+                float sourceY = sourceVertex.position.y * ofGetHeight();
+                float sinkX = sinkVertex.position.x * ofGetWidth();
+                float sinkY = sinkVertex.position.y * ofGetHeight();
 
-            ofDrawLine(ofPoint(sourceX, sourceY), ofPoint(sinkX, sinkY));
+                ofDrawLine(ofPoint(sourceX, sourceY), ofPoint(sinkX, sinkY));
+            }
         }
         ofSetColor(ofColor::white);
     }
