@@ -432,13 +432,13 @@ public:
         // pathfinding展示
         if (currentMode == 4 && ImGui::CollapsingHeader("path finding")) {
             float maxForce = arriveBehavior->getMaxForce();
-            if (ImGui::SliderFloat("Max Acceleration", &maxForce, 0.0f, 10000.0f)) {
+            if (ImGui::SliderFloat("Max Acceleration", &maxForce, 0.0f, 10000000000000000.0f)) {
                 arriveBehavior->setMaxForce(maxForce);
                 seekBehavior->setMaxForce(maxForce);
             }
 
             float maxSpeed = arriveBehavior->getMaxSpeed();
-            if (ImGui::SliderFloat("Max Speed", &maxSpeed, 0.0f, 20000.0f)) {
+            if (ImGui::SliderFloat("Max Speed", &maxSpeed, 0.0f, 500.0f)) {
                 arriveBehavior->setMaxSpeed(maxSpeed);
                 seekBehavior->setMaxSpeed(maxSpeed);
             }

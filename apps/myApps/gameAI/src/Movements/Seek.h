@@ -24,7 +24,6 @@ public:
             character->orientation = atan2(character->velocity.y, character->velocity.x);
         }
         wrapAroundScreen();
-        //std::cout << "Seek: character->velocity * deltaTime: " << character->velocity * deltaTime << std::endl;
     }
 
     void setTargetPosition(const ofVec2f& target) { targetPosition = target; }
