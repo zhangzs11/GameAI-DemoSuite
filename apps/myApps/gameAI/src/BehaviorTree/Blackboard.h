@@ -7,7 +7,7 @@
 #include <any>
 
 class Blackboard {
-private:
+public:
     std::unordered_map<std::string, std::any> data;
 
 public:
@@ -38,5 +38,9 @@ public:
             }
         }
         return defaultValue;
+    }
+
+    const std::unordered_map<std::string, std::any>& getData() const {
+        return data;
     }
 };

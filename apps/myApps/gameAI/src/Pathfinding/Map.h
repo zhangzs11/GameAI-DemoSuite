@@ -268,7 +268,7 @@ public:
     // 尝试连接到现有节点
     void connectToExistingNodes(int newNodeId, float maxDistanceFactor) {
         const ofVec2f& newNodePosition = graph->vertices[newNodeId].position;
-        //float maxConnectionDistance = (1.0f / density) * maxDistanceFactor;  // 基于step的最大距离
+        float maxConnectionDistance = maxDistanceFactor;  // 基于step的最大距离
 
         for (const auto& [id, node] : graph->vertices) {
             if (id != newNodeId) {
@@ -281,7 +281,7 @@ public:
                     }
                 }
 
-                if (!pathBlocked) {
+                if (!pathBlocked && distance < maxConnectionDistance) {
                     float weight = distance;  // 使用距离作为权重
                     graph->addEdgeDouble(newNodeId, id, weight);  // 添加双向边
                 }

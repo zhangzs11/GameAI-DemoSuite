@@ -29,7 +29,7 @@ void ofApp::setup(){
 	behaviorTreeDemo.setup();
 	goapDemo.setup();
 
-	currentDemo = &movementDemo;
+	currentDemo = &behaviorTreeDemo;
 
 }
 

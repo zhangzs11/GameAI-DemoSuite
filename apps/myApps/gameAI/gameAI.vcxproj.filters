@@ -308,6 +308,9 @@
     <ClInclude Include="src\include\json.hpp">
       <Filter>src\include</Filter>
     </ClInclude>
+    <ClInclude Include="src\Objects\Bullet.h">
+      <Filter>src\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

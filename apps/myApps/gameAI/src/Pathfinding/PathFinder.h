@@ -19,7 +19,7 @@ public:
     ofVec2f targetPosition;
 
     std::shared_ptr<Arrive> arriveBehavior;
-    std::shared_ptr<Seek> seekBehavior;
+    //std::shared_ptr<Seek> seekBehavior;
 
     PathFinder() {
     }

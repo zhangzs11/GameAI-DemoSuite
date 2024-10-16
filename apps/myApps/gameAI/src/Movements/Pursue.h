@@ -14,8 +14,8 @@ public:
 
         // 计算追上目标所需的时间
         float updatesNeeded = 1.0f;
-        if (targetCharacter->velocity.length() != 0.0f) {
-            updatesNeeded = distance.length() / targetCharacter->velocity.length();
+        if (character->velocity.length() != 0.0f) {
+            updatesNeeded = distance.length() / character->velocity.length();
         }
 
         // 预测目标的未来位置

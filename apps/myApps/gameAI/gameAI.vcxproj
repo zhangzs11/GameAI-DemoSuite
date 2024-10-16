@@ -133,6 +133,7 @@
     <ClInclude Include="src\Demos\PathfindingDemo.h" />
     <ClInclude Include="src\Goap\Core\GoapAction.h" />
     <ClInclude Include="src\include\json.hpp" />
+    <ClInclude Include="src\Objects\Bullet.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\BehaviorTree\BasicBehaviorTree.h" />
     <ClInclude Include="src\BehaviorTree\Blackboard.h" />

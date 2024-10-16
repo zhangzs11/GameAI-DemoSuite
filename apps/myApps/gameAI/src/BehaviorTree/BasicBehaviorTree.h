@@ -14,12 +14,10 @@ class Task {
 public:
     virtual ~Task() = default;
     virtual Status run(Tick& tick) = 0;
-    virtual void onEnter() {}
-    virtual void onExit() {}
 };
 
 class Tick {
-private:
+public:
     Blackboard* bb;
     Status currentStatus = Status::Running; // 默认状态为Running
     Task* currentTask = nullptr;
@@ -33,25 +31,15 @@ public:
 
     void open(Task& t) {
         currentTask = &t;
-        t.onEnter();
     }
 
-    void enter(Task& t) {
-        // 通常在任务开始时调用
-    }
-
-    Status execute(Task& t) {
-        currentStatus = t.run(*this);
+    Status execute() {
+        currentStatus = currentTask->run(*this);
         return currentStatus;
     }
 
-    void close(Task& t) {
-        t.onExit();
+    void close() {
         currentTask = nullptr;
-    }
-
-    void exit(Task& t) {
-        // 通常在任务结束时调用
     }
 
     void setStatus(Status status) {
@@ -75,15 +63,14 @@ class BehaviourTree {
 private:
     Task* root;
     Blackboard* blackboard;
-
+    Tick* tick;
 public:
-    BehaviourTree(Task* root, Blackboard* blackboard) : root(root), blackboard(blackboard) {}
+    BehaviourTree(Task* root, Blackboard* blackboard, Tick* tick) : root(root), blackboard(blackboard), tick(tick) {}
 
-    Status makeDecision() {
-        // TODO：
-        // 不应该每一帧都从root调用run，应该是如果上一帧失败，或成功，这一帧重新从root走，如果上一帧是running，应该是tick直接执行当前的currentTask
-        Tick t(blackboard);
-        Status result = root->run(t);
+    Status makeDecision(float deltaTime) {
+        Status result;
+        result = root->run(*tick);
+        tick->frameTime = deltaTime;
         return result;
     }
 };
@@ -99,9 +86,12 @@ public:
         delete child;
     }
 
-    Status run(Tick& tick) override {  // 使用 override 明确表示重写
+    Status run(Tick& tick) override {
         if (child != nullptr) {
-            return child->run(tick);
+            tick.open(*child);
+            Status status = tick.execute();
+            tick.close();
+            return status;
         }
         return Status::Failure;  // 如果没有子任务，返回失败状态
     }
@@ -142,13 +132,13 @@ public:
 
     Status run(Tick& tick) override {
         for (auto& child : children) {
-            tick.open(*child); // 准备执行子节点
-            Status status = tick.execute(*child);
+            tick.open(*child);
+            Status status = tick.execute();
             if (status != Status::Failure) {
-                tick.close(*child); // 成功或运行中，结束子节点的执行
-                return status; // 返回子节点的状态
+                tick.close(); // 其中只要有成功或运行中，结束子节点的执行
+                return status;
             }
-            tick.close(*child); // 子节点失败，结束子节点的执行
+            tick.close(); // 子节点失败，结束子节点的执行
         }
         return Status::Failure; // 所有子节点都失败
     }
@@ -181,8 +171,8 @@ public:
         int chosenIndex = distribution(gen);
 
         tick.open(*children[chosenIndex]);
-        Status result = tick.execute(*children[chosenIndex]);
-        tick.close(*children[chosenIndex]);
+        Status result = tick.execute();
+        tick.close();
         return result;
     }
 };
@@ -190,24 +180,35 @@ public:
 class BTSequenceNode : public Task {
 private:
     std::vector<Task*> children;
-
+    int currentChildIndex = 0; 
 public:
     void addChild(Task* child) {
         children.push_back(child);
     }
 
     Status run(Tick& tick) override {
-        for (Task* child : children) {
+        // Resume from the last running node
+        while (currentChildIndex < children.size()) {
+            Task* child = children[currentChildIndex];
             tick.open(*child);
-            Status status = tick.execute(*child);
-            // TODO:
-            // 感觉如果还是running的话，不应该close,这样会失去当前的node位置
-            tick.close(*child);
-            if (status != Status::Success) {
-                return status; // 如果任一子节点失败或运行中，返回该状态
+            Status status = tick.execute();
+            tick.close();
+
+            if (status == Status::Running) {
+                return Status::Running; // Continue running the current child
             }
+
+            if (status != Status::Success) {
+                currentChildIndex = 0; // Reset when a child fails
+                return status; // Return failure or error
+            }
+
+            // Move to the next child if the current one succeeds
+            currentChildIndex++;
         }
-        return Status::Success; // 所有子节点成功
+
+        currentChildIndex = 0; // Reset when all children succeed
+        return Status::Success; // All children have succeeded
     }
 };
 
@@ -228,19 +229,17 @@ public:
     BTRepeatUntilFailNode(Task* child) : BTDecoratorNode(child) {}
 
     Status run(Tick& tick) override {
-        // TODO:
-        // 不应该用while,这样如果一直循环，中间的结果就没法提交给渲染了
-        // 应该是open一次，得到current任务，execute，如果成功，不close，这样tick的current就还是当前的任务
-        // 每一帧的调用也不应该是从root，而是直接用tick执行当前的current
-        while (true) {
-            tick.open(*child);
-            Status status = tick.execute(*child);
-            tick.close(*child);
-            if (status != Status::Success) {
-                return Status::Failure; // 一旦子节点失败，停止执行并返回失败
-            }
+        // Execute the child task
+        tick.open(*child);
+        Status status = tick.execute();
+        tick.close();
+
+        if (status != Status::Success) {
+            return Status::Failure;
         }
-        return Status::Running; // 理论上不应该到这里
+
+        // Return running after each successful execution to allow for frame-by-frame processing
+        return Status::Running;
     }
 };
 
@@ -254,11 +253,11 @@ public:
     Status run(Tick& tick) override {
         if (condition(tick)) {
             tick.open(*child);
-            Status status = tick.execute(*child);
-            tick.close(*child);
+            Status status = tick.execute();
+            tick.close();
             return status;
         }
-        return Status::Failure; // 条件不满足，返回失败
+        return Status::Failure;
     }
 };
 
@@ -268,9 +267,9 @@ public:
     BTInverterNode(Task* child) : BTDecoratorNode(child) {}
 
     Status run(Tick& tick) override {
-        tick.open(*child); // 准备执行子节点
-        Status status = tick.execute(*child);
-        tick.close(*child); // 结束子节点的执行
+        tick.open(*child);
+        Status status = tick.execute();
+        tick.close();
 
         // 反转子节点的成功/失败状态
         if (status == Status::Success) {

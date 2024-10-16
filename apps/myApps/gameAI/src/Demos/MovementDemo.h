@@ -117,12 +117,12 @@ public:
             auto arriveMovement = std::dynamic_pointer_cast<Arrive>(currentMovement);
 
             float slowingRadius = arriveMovement->getSlowingRadius();
-            if (ImGui::SliderFloat("Slowing Radius", &slowingRadius, 0.0f, 100.0f)) {
+            if (ImGui::SliderFloat("Slowing Radius", &slowingRadius, 0.0f, 10000.0f)) {
                 arriveMovement->setSlowingRadius(slowingRadius);
             }
 
             float stopRadius = arriveMovement->getStopRadius();
-            if (ImGui::SliderFloat("Stop Radius", &stopRadius, 0.0f, 50.0f)) {
+            if (ImGui::SliderFloat("Stop Radius", &stopRadius, 0.0f, 5000.0f)) {
                 arriveMovement->setStopRadius(stopRadius);
             }
         }

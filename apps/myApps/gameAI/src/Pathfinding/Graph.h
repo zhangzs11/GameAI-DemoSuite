@@ -158,9 +158,6 @@ public:
         std::unordered_map<int, float> cost_so_far;
         std::set<std::pair<float, int>> frontier;
 
-        //number of nodes visited
-        int nodeNum = 0;
-
         came_from[start] = -1;
         cost_so_far[start] = 0;
         frontier.insert({ 0, start });
@@ -178,8 +175,6 @@ public:
                 float new_cost = cost_so_far[current] + getCost(current, next);
 
                 if (!cost_so_far.count(next) || new_cost < cost_so_far[next]) {
-                    nodeNum++;
-
                     cost_so_far[next] = new_cost;
                     float priority = new_cost;
                     frontier.erase({ cost_so_far[next], next });
@@ -188,7 +183,6 @@ public:
                 }
             }
         }
-        //std::cout << "Dijkstra Algorithm  number of nodes visited : " << nodeNum << std::endl;
         return { came_from, cost_so_far };
     }
     // Heuristics 
@@ -210,9 +204,6 @@ public:
         std::unordered_map<int, float> cost_so_far;
         std::set<std::pair<float, int>> frontier;
 
-        //number of nodes visited
-        int nodeNum = 0;
-
         came_from[start] = -1;
         cost_so_far[start] = 0;
         frontier.insert({ 0, start });
@@ -233,12 +224,9 @@ public:
                     frontier.erase({ cost_so_far[next] + heuristic(next, goal, vertices), next });
                     frontier.insert({ priority, next });
                     came_from[next] = current;
-                    nodeNum++;
                 }
             }
         }
-
-        //std::cout << "A star Algorithm  number of nodes visited : " << nodeNum << std::endl;
         return { came_from, cost_so_far };
     }
 
